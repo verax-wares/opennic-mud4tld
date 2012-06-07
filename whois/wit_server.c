@@ -33,12 +33,12 @@
 #define SUCCESS 0
 #define ERROR 1
 
-#define SERVER_PORT 4343
+#define SERVER_PORT 43
 #define MAX_MSG 53
 #define RB_LENGTH	1024
 
-#define DEBUG 1
-#define VERBOSE 1
+// #define DEBUG 1
+// #define VERBOSE 1
 
 struct {
 	char dr_domain[51];

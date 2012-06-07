@@ -3,6 +3,7 @@
 	By Martin COLEMAN (C) 2012. All rights reserved.
 	Compile via gcc -o init_tld main.c -lsqlite3
 	Tiny C Compiler should work well too.
+	Licensed under the Basic Software License v1.0.
 	
 	v0.1
 	- Extract domain info from OZ_tld.sq3
