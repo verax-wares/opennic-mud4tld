@@ -7,7 +7,7 @@
 include("conf.php");
 show_header();
 
-echo "<center><h2>".$TLD."Registration</h2>\n";
+echo "<center><h2>".$TLD." Registration</h2>\n";
 
 if(isset($_POST["check"]))
 {

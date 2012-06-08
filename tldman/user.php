@@ -86,6 +86,7 @@ function register($username, $name, $email, $password)
 	if(filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE)
 	{
 		echo "Not a valid email address";
+		die;
 	}
 	$username=clean_up_input($username); /* just in case */
 	$username=strtolower($username);
@@ -140,7 +141,7 @@ function dashboard()
 	echo "<center><H2>Welcome to ".$username."'s Dashboard for ".$TLD."</H2>\n";
 	echo "<b>My ".$TLD." domains</b><BR><BR>";
 	$base=sqlite_open("OZ_tld.sq3", 0666);
-	$query="SELECT domain, registered FROM domains WHERE userid=".$userid."";
+	$query="SELECT domain, registered, expires FROM domains WHERE userid=".$userid."";
 	$results = sqlite_query($base, $query);
 	if(dbNumRows($results))
 	{
@@ -157,7 +158,7 @@ function dashboard()
 			echo "<tr><td><a href=\"domain.php?action=modify&domain=".$arr['domain']."\">".$arr['domain'].$TLD."</a></td><td>".$arr['registered']."</td>";
 			if($domain_expires==1)
 			{
-				echo "<td>N/A</td>";
+				echo "<td>".$arr['expires']."</td>";
 			}
 			echo "</tr>\n";
 		}
@@ -198,7 +199,7 @@ if(strlen($country)>0)
 <option value="US">United States</option>
 </select><sup>**</sup></td></tr>
 <tr><td>Current Password</td><td><input type="password" name="password"></td></tr>
-<tr><td valign="top">Password</td><td><input type="password" name="password1"><BR><font size="-1">(Must be at least 6 characters long)</font></td></tr>
+<tr><td valign="top">Password</td><td><input type="password" name="password1"><BR><font size="-1">(Must be at least 5 characters long)</font></td></tr>
 <tr><td>Password Confirm</td><td><input type="password" name="password2"></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" name="submit" value="Update"></td></tr>
 <input type="hidden" name="action" value="update_account">
@@ -313,10 +314,14 @@ if(!isset($_REQUEST['action']))
 				}
 				$password=$password1;
 			}
-			if( strlen($password1)<5)
+			if(strlen($password1)>0)
 			{
-				echo "Remember, your new password needs to be at least 5 characters long.";
-				die;
+				if(strlen($password1)<5)
+				{
+					echo "Remember, your new password needs to be at least 5 characters long.";
+					die;
+				}
+				$password=$password1;
 			}
 			update_account($country, $password);
 			break;

@@ -97,6 +97,7 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	global $TLD;
 
 	show_header();
+	$updated=strftime('%Y-%m-%d');
 	$userid=$_SESSION['userid'];
 	$base=sqlite_open("OZ_tld.sq3", 0666);
 	$query = "SELECT userid FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
@@ -115,10 +116,10 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 		{
 			echo "Error. NS1 and NS2 custom nameservers must be IP addresses.";
 		} else {
-			$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."', ns1_ip='".$ns1_ip."', ns2_ip='".$ns2_ip."' WHERE domain='".$domain."'";
+			$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."', ns1_ip='".$ns1_ip."', ns2_ip='".$ns2_ip."', updated='".$updated."' WHERE domain='".$domain."'";
 		}
 	} else {
-		$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."' WHERE domain='".$domain."'";
+		$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."', updated='".$updated."' WHERE domain='".$domain."'";
 	}
 	sqlite_query($base, $query);
 	echo "Done. The changes should take effect within the hour. Please be aware some networks may not see the changes for up to 72 hours.<BR>";

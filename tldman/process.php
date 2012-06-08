@@ -71,13 +71,14 @@ if(isset($_POST['submit']))
 	$email=$get_user_details_arr['email'];
 	date_default_timezone_set('Australia/Brisbane');
 	$rightnow=strftime('%Y-%m-%d');
+	$expires=strftime('%Y-%m-%d', strtotime("$rightnow +1 year"));
 	if( (strlen($ns1_ip)>7) && (strlen($ns2_ip)>7))
 	{
-		$query = "INSERT INTO domains (domain, name, email, ns1, ns2, ns1_ip, ns2_ip, registered, userid) VALUES('".$domain."', '".$name."', '".$email."', '".$ns1."', '".$ns2."', '".$ns1_ip."', '".$ns2_ip."', '".$rightnow."', '".$userid."')";
+		$query = "INSERT INTO domains (domain, name, email, ns1, ns2, ns1_ip, ns2_ip, registered, expires, updated, userid) VALUES('".$domain."', '".$name."', '".$email."', '".$ns1."', '".$ns2."', '".$ns1_ip."', '".$ns2_ip."', '".$rightnow."', '".$expires."', '".$rightnow."', '".$userid."')";
 	} else {
-		$query = "INSERT INTO domains (domain, name, email, ns1, ns2, registered, userid) VALUES('".$domain."', '".$name."', '".$email."', '".$ns1."', '".$ns2."', '".$rightnow."', '".$userid."')";
+		$query = "INSERT INTO domains (domain, name, email, ns1, ns2, registered, expires, updated, userid) VALUES('".$domain."', '".$name."', '".$email."', '".$ns1."', '".$ns2."', '".$rightnow."', '".$expires."', '".$rightnow."', '".$userid."')";
 	}
-	//echo "DEBUG: [".$query."]";
+	// echo "DEBUG: [".$query."]";
 	// $base=sqlite_open("OZ_tld.sq3", 0666);
 	sqlite_query($base, $query);
 	echo "<font color=\"#008000\"><b>Complete</b></font><BR>Congratulations! Your new domain has been registered and should be live within the next 24 hours.";

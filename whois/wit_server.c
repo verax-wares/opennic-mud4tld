@@ -1,7 +1,7 @@
 /*
 	WHOIS server for opennicproject.org
 	By Martin Coleman (C) 2012. All rights reserved.
-	
+
 	Version 0.1
 	- Interfaces with sockets
 	- Interfaces with SQLite3
@@ -9,14 +9,26 @@
 	Version 0.2
 	- Improved domain handling upon query
 	
+	Version 0.3
+	- Added nameservers information to WHOIS output.
+	- Added compiler define flag for testing.
+
 	WARNING!! WARNING!! WARNING!! WARNING!! WARNING!!
-	This is a big hack. This really needs to be 
+	This is a big hack. This really needs to be
 	cleaned up, but it is functional for now. There
 	is some redundant code, and commented out code
 	everywhere as I tried to get the damn thing to
 	run. It seems socket programming really can be
 	intricate.
 	WARNING!! WARNING!! WARNING!! WARNING!! WARNING!!
+	
+	ADMIN NOTES:
+	* Compile with -DWHOIS_TEST for it to use port 4343 instead of 43 to try it out.
+	* Now takes -DDEBUG and -DVERBOSE as compile time options for debugging and more verbose output
+
+	DEV NOTES:
+	* I recommend a tab-width of 4.
+	* Needs more templating work.
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,18 +45,31 @@
 #define SUCCESS 0
 #define ERROR 1
 
-#define SERVER_PORT 43
+#ifdef WHOIS_TEST
+#define SERVER_PORT 4343
+#else
+#define SERVER_PORT 4343
+#endif
 #define MAX_MSG 53
-#define RB_LENGTH	1024
+#define RB_LENGTH	2048
 
-// #define DEBUG 1
-// #define VERBOSE 1
+/* these are passed to gcc now
+#define DEBUG
+#define VERBOSE
+*/
 
 struct {
 	char dr_domain[51];
-	char dr_registered[16];
+	char dr_registered[11];
+	char expires[11];
+	char updated[11];
 	char dr_name[20];
 	char dr_email[50];
+    char ns1[30];
+    char ns2[30];
+    char ns1_ip[16];
+    char ns2_ip[16];
+    int status;
 } DOMAINRECORD;
 // DOMAINRECORD *record;
 
@@ -58,52 +83,6 @@ void chomp(char *s)
     while(*s && *s != '\n' && *s != '\r' && *s != '_'  && *s != '"'  && *s != '\'') s++;
 
     *s = 0;
-}
-
-/*
- * Search and replace a string with another string , in a string
- * */
-char *str_replace(char *search , char *replace , char *subject)
-{
-	char  *p = NULL , *old = NULL , *new_subject = NULL ;
-	int c = 0 , search_size;
-
-	search_size = strlen(search);
-
-	//Count how many occurences
-	for(p = strstr(subject , search) ; p != NULL ; p = strstr(p + search_size , search))
-	{
-		c++;
-	}
-
-	//Final size
-	c = ( strlen(replace) - search_size )*c + strlen(subject);
-
-	//New subject with new size
-	new_subject = malloc( c );
-
-	//Set it to blank
-	strcpy(new_subject , "");
-
-	//The start position
-	old = subject;
-
-	for(p = strstr(subject , search) ; p != NULL ; p = strstr(p + search_size , search))
-	{
-		//move ahead and copy some text from original subject , from a certain position
-		strncpy(new_subject + strlen(new_subject) , old , p - old);
-
-		//move ahead and copy the replacement text
-		strcpy(new_subject + strlen(new_subject) , replace);
-
-		//The new start position after this search match
-		old = p + search_size;
-	}
-
-	//Copy the part after the last search match
-	strcpy(new_subject + strlen(new_subject) , old);
-
-	return new_subject;
 }
 
 int query_domain(char domainname[50])
@@ -122,7 +101,7 @@ int query_domain(char domainname[50])
 		sqlite3_close(db);
 		return 0;
 	}
-	sprintf(sql_str, "SELECT domain, registered, name, email FROM domains WHERE domain='%s' LIMIT 1", domainname);
+	sprintf(sql_str, "SELECT domain, registered, name, email, ns1, ns2, expires, updated FROM domains WHERE domain='%s' LIMIT 1", domainname);
 
 	#ifdef DEBUG
 	printf("Query [%s]\n", sql_str);
@@ -145,6 +124,10 @@ int query_domain(char domainname[50])
 			sprintf(DOMAINRECORD.dr_registered, "%s", sqlite3_column_text(res, 1));
 			sprintf(DOMAINRECORD.dr_name, "%s", sqlite3_column_text(res, 2));
 			sprintf(DOMAINRECORD.dr_email, "%s", sqlite3_column_text(res, 3));
+			sprintf(DOMAINRECORD.ns1, "%s", sqlite3_column_text(res, 4));
+			sprintf(DOMAINRECORD.ns2, "%s", sqlite3_column_text(res, 5));
+			sprintf(DOMAINRECORD.expires, "%s", sqlite3_column_text(res, 6));
+			sprintf(DOMAINRECORD.updated, "%s", sqlite3_column_text(res, 7));
 		} else {
 			break;
 		}
@@ -164,7 +147,7 @@ int main (int argc, char *argv[])
 	char no_result[10]="NO RESULT";
 	char ret_svr[10]="127.0.0.1";
 
-	printf("WHOIS server for The OpenNIC Project. Rev.2 (C) 2012 Martin COLEMAN.\n");
+	printf("WHOIS server for The OpenNIC Project. Rev.3 (C) 2012 Martin COLEMAN.\n");
 	/* create socket */
 	sd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sd<0)
@@ -172,12 +155,12 @@ int main (int argc, char *argv[])
 		fprintf(stderr, "cannot open socket\n");
 		return ERROR;
 	}
-   
+
 	/* bind server port */
 	servAddr.sin_family = AF_INET;
 	servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddr.sin_port = htons(SERVER_PORT);
-   
+
 	if(bind(sd, (struct sockaddr *) &servAddr, sizeof(servAddr))<0)
 	{
 		fprintf(stderr, "cannot bind port\n");
@@ -197,22 +180,19 @@ int main (int argc, char *argv[])
 			fprintf(stderr, "cannot accept connection\n");
 			return ERROR;
 		}
-      
+
 		/* init line */
 		memset(line, 0, MAX_MSG);
-      
+
 		/* receive segments */
-		//while(read_line(newSd,line)!=ERROR)
 		int rc=0;
-		//while(1)
-		//{
 		if(rc=recv(newSd, line, MAX_MSG, 0))
 		{
-        		chomp(line);
+			chomp(line);
 
-        		#ifdef VERBOSE
-        		printf("query received from %s for %s\n", inet_ntoa(cliAddr.sin_addr), line);
-        		#endif
+			#ifdef VERBOSE
+			printf("query received from %s for %s\n", inet_ntoa(cliAddr.sin_addr), line);
+			#endif
 
 			query_domain(line);
 
@@ -226,18 +206,17 @@ int main (int argc, char *argv[])
 			} else {
 				#ifdef DEBUG
 					#ifdef VERBOSE
-				printf("Domain: %s\nRegistered: %s\nName: %s\nEmail: %s\n\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email);
+				printf("Domain: %s\nRegistered: %s\nName: %s\nEmail: %s\n\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email); /* this is probably not needed anymore. M. */
 					#endif
 				#endif
-				sprintf(return_buffer, "Welcome to the OpenNIC Registry!\nDomain: %s.oz\nRegistered: %s\nContact Name: %s\nContact Email: %s\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email);
+				sprintf(return_buffer, "Welcome to the OpenNIC Registry!\nDomain: %s.oz\nDomain Registered: %s\nDomain Expires: %s\nDomain Updated: %s\nDomain Status: Active\nRegistrant Name: %s\nRegistrant Email: %s\nNS1: %s\nNS2: %s\nRegistrar URL: www.opennic.oz\n\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.expires, DOMAINRECORD.updated, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email, DOMAINRECORD.ns1, DOMAINRECORD.ns1);
 				send(newSd, return_buffer, RB_LENGTH, 0);
 			}
-			/* init line */
 			memset(line, 0, MAX_MSG);
-			
+
 			DOMAINRECORD.dr_domain[0]='\0';
-		} /* while(read_line) */
+		}
 		close(newSd);
 		memset(line, 0, MAX_MSG);
-	} /* while (1) */
+	}
 }

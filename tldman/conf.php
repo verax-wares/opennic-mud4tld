@@ -40,6 +40,11 @@
    v0.62 - 2012-06-05
    - Fixed small problem in the error checking logic for domain processing.
    - Fixed small bug in domain update.
+   
+   v0.65 = 2012-06-08
+   - Added domain updated and expires segments.
+   - Added basic design for future super-admin module.
+   - Fixed a few spacing and formatting glitches.
 */
 session_start();
 $TLD=".oz";
@@ -86,6 +91,10 @@ function dbNumRows($qid)
 
 function domain_taken($domain)
 {
+	if($domain=="register" || $domain=="opennic" || $domain=="example")
+	{
+		return 1;
+	}
 	$base=sqlite_open("OZ_tld.sq3", 0666);
 	$query = "SELECT domain FROM domains WHERE domain='".$domain."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
