@@ -48,7 +48,7 @@
 #ifdef WHOIS_TEST
 #define SERVER_PORT 4343
 #else
-#define SERVER_PORT 4343
+#define SERVER_PORT 43
 #endif
 #define MAX_MSG 53
 #define RB_LENGTH	2048
