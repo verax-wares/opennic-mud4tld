@@ -15,6 +15,7 @@
 	
 	Version 0.4
 	- Complies a little better with http://www.ietf.org/rfc/rfc3912.txt
+	- Improved string and memory management.
 
 	WARNING!! WARNING!! WARNING!! WARNING!! WARNING!!
 	This is a big hack. This really needs to be
@@ -218,6 +219,13 @@ int main (int argc, char *argv[])
 			memset(line, 0, MAX_MSG);
 
 			DOMAINRECORD.dr_domain[0]='\0';
+			DOMAINRECORD.dr_registered[0]='\0';
+			DOMAINRECORD.expires[0]='\0';
+			DOMAINRECORD.updated[0]='\0';
+			DOMAINRECORD.dr_name[0]='\0';
+			DOMAINRECORD.dr_email[0]='\0';
+			DOMAINRECORD.ns1[0]='\0';
+			DOMAINRECORD.ns2[0]='\0';
 		}
 		close(newSd);
 		memset(line, 0, MAX_MSG);
