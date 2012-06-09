@@ -12,6 +12,9 @@
 	Version 0.3
 	- Added nameservers information to WHOIS output.
 	- Added compiler define flag for testing.
+	
+	Version 0.4
+	- Complies a little better with http://www.ietf.org/rfc/rfc3912.txt
 
 	WARNING!! WARNING!! WARNING!! WARNING!! WARNING!!
 	This is a big hack. This really needs to be
@@ -147,7 +150,7 @@ int main (int argc, char *argv[])
 	char no_result[10]="NO RESULT";
 	char ret_svr[10]="127.0.0.1";
 
-	printf("WHOIS server for The OpenNIC Project. Rev.3 (C) 2012 Martin COLEMAN.\n");
+	printf("WIT/WHOIS server for The OpenNIC Project. Rev.4 (C) 2012 Martin COLEMAN.\n");
 	/* create socket */
 	sd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sd<0)
@@ -209,7 +212,7 @@ int main (int argc, char *argv[])
 				printf("Domain: %s\nRegistered: %s\nName: %s\nEmail: %s\n\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email); /* this is probably not needed anymore. M. */
 					#endif
 				#endif
-				sprintf(return_buffer, "Welcome to the OpenNIC Registry!\nDomain: %s.oz\nDomain Registered: %s\nDomain Expires: %s\nDomain Updated: %s\nDomain Status: Active\nRegistrant Name: %s\nRegistrant Email: %s\nNS1: %s\nNS2: %s\nRegistrar URL: www.opennic.oz\n\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.expires, DOMAINRECORD.updated, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email, DOMAINRECORD.ns1, DOMAINRECORD.ns1);
+				sprintf(return_buffer, "Welcome to the OpenNIC Registry!\r\nDomain: %s.oz\r\nDomain Registered: %s\r\nDomain Expires: %s\r\nDomain Updated: %s\r\nDomain Status: Active\r\nRegistrant Name: %s\r\nRegistrant Email: %s\r\nNS1: %s\r\nNS2: %s\r\nRegistrar URL: www.opennic.oz\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.expires, DOMAINRECORD.updated, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email, DOMAINRECORD.ns1, DOMAINRECORD.ns1);
 				send(newSd, return_buffer, RB_LENGTH, 0);
 			}
 			memset(line, 0, MAX_MSG);
