@@ -15,10 +15,14 @@
 	
 	v0.3
 	- Improved initial opennic.TLD and register.TLD setup
+	
+	v0.4
+	- Full custom nameserver support is now implemented.
 */
 #include <stdio.h>
 #include <sqlite3.h>
 #include <time.h>
+#include <string.h>
 
 #define VERSION "0.3"
 // #define VERBOSE 1
@@ -35,6 +39,12 @@ int main(int argc, char *argv[])
 	char *tld;
 	char blank[10];
 	blank[0]='\0';
+	char *subdomain;
+	char *subdomain_cp;
+	char ns1[54];
+	char ns2[54];
+	char ns1_ip[16];
+	char ns2_ip[16];
 
 	#ifdef VERBOSE
 	fprintf(stderr, "TLD Initialiser v%s (C) 2012 Martin COLEMAN.\n", VERSION);
@@ -115,6 +125,35 @@ int main(int argc, char *argv[])
 			{
 				printf("%-16s\tNS\t%s.\n", sqlite3_column_text(res, 0), sqlite3_column_text(res, 1));
 				printf("\t\t\tNS\t%s.\n", sqlite3_column_text(res, 2));
+				if(sqlite3_column_text(res, 3))
+				{
+					sprintf(ns1, "%s", sqlite3_column_text(res, 1));
+					sprintf(ns2, "%s", sqlite3_column_text(res, 2));
+					sprintf(ns1_ip, "%s", sqlite3_column_text(res, 3));
+					sprintf(ns2_ip, "%s", sqlite3_column_text(res, 4));
+					/* mega hack following */
+					// printf("NS1: [%s]\nNS2: [%s]\n", ns1_ip, ns2_ip); /* FOR DEBUGGING ONLY */
+					if(strstr(ns1, ".oz"))
+					{
+						printf("$ORIGIN %s.%s.\n", sqlite3_column_text(res, 0), tld);
+						subdomain_cp=strdup(ns1);
+						subdomain=strtok(subdomain_cp, ".");
+						//subdomain=strtok(NULL, subdomain);
+						printf("%-16s\tA\t%s\n", subdomain, ns1_ip);
+						subdomain_cp[0]='\0';
+						subdomain[0]='\0';
+
+						subdomain_cp=strdup(ns2);
+						subdomain=strtok(subdomain_cp, ".");
+						//subdomain=strtok(NULL, subdomain);
+						printf("%-16s\tA\t%s\n", subdomain, ns2_ip);
+						subdomain_cp[0]='\0';
+						subdomain[0]='\0';
+					printf("$ORIGIN %s.\n", tld);
+					}
+					ns1_ip[0]='\0';
+					ns2_ip[0]='\0';
+				}
 			}
 		} else {
 			break;
