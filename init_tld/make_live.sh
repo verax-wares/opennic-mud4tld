@@ -16,6 +16,9 @@ MY_HOST=ns1.opennic.oz
 MY_TLD=oz
 # end of modifications
 
+# TODO: detect flag file indicating a change
+
+# get to the directory
 cd $OPENNIC_SUITE
 
 echo -n "Copying TLD database..."
@@ -34,3 +37,5 @@ echo "Done"
 echo -n "Restarting BIND..."
 /etc/init.d/bind reload
 echo "Done"
+
+# TODO: remove flag file so we know we're done.
