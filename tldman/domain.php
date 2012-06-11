@@ -127,6 +127,12 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	{
 		echo "<b>Please Note:</b> We highly recommend that you use two different nameserver values instead of the same one.";
 	}
+
+	/* flag init_tld */
+	$inittld_file="/tmp/inittld.flag";
+	$fh=fopen($inittld_file, 'w');
+	fwrite($fh, "1");
+	fclose($fh);
 }
 
 function check_domain($domain)

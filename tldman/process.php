@@ -81,6 +81,13 @@ if(isset($_POST['submit']))
 	// echo "DEBUG: [".$query."]";
 	// $base=sqlite_open("OZ_tld.sq3", 0666);
 	sqlite_query($base, $query);
+
+	/* flag init_tld */
+	$inittld_file="/tmp/inittld.flag";
+	$fh=fopen($inittld_file, 'w');
+	fwrite($fh, "1");
+	fclose($fh);
+
 	echo "<font color=\"#008000\"><b>Complete</b></font><BR>Congratulations! Your new domain has been registered and should be live within the next 24 hours.";
 } else {
 	die("Error. Incorrect call.");
