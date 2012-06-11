@@ -1,7 +1,1 @@
-init_tld so far will only work properly if a domain is using an already 
-established DNS provider such as a third-party DNS service or a webhost. 
-It does not yet properly support custom nameservers. Please be aware of 
-this.
-
-That and it has not been exhaustively tested, so please do not use in a 
-production environment just yet.
+This is still being tested, but from preliminary checks seems to go pretty well. Check out make_live.sh for how to use it all.
