@@ -16,7 +16,10 @@ MY_HOST=ns1.opennic.oz
 MY_TLD=oz
 # end of modifications
 
-# TODO: detect flag file indicating a change
+# detect if flag file exists indicating a change
+if [ ! -f /tmp/inittld.flag ]; then
+exit 0
+fi
 
 # get to the directory
 cd $OPENNIC_SUITE
@@ -38,4 +41,7 @@ echo -n "Restarting BIND..."
 /etc/init.d/bind reload
 echo "Done"
 
-# TODO: remove flag file so we know we're done.
+# remove flag file
+rm /tmp/inittld.flag
+
+exit 0
