@@ -18,5 +18,12 @@ Check domain <input type="text" name="domain">.OZ&nbsp;<input type="submit" name
 <p><font size="-1"><sup>*</sup> Provided the registrant adheres to the <a href="charter.htm">charter</a>.</font></p>
 </td></tr></table>
 
+<?php
+if($dev_link==1)
+{
+	echo "<p><center><font size=\"-1\">Do you run a DNS service or domain registrar? Find out how to offer ".$TLD." domains to your users <a href=\"api/index.html\">here</a></font></center></p>";
+}
+?>
+
 </body>
 </html>

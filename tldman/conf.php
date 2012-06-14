@@ -41,16 +41,20 @@
    - Fixed small problem in the error checking logic for domain processing.
    - Fixed small bug in domain update.
    
-   v0.65 = 2012-06-08
+   v0.65 - 2012-06-08
    - Added domain updated and expires segments.
    - Added basic design for future super-admin module.
    - Fixed a few spacing and formatting glitches.
+   
+   v0.66 - 2012-06-11
+    -Further improved init_tld integration.
 */
 session_start();
 $TLD=".oz";
 $ws_title="dot OZ";
-$domain_expires=1; // for future use. to allow domains to expire
+$domain_expires=1; // to allow domains to expire
 $sw_version="0.62";
+$dev_link=0;
 
 function sqlite_open($location,$mode)
 {
