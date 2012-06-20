@@ -34,7 +34,7 @@ cd $OPENNIC_SUITE
 echo "Done"
 
 echo -n "Installing new zone file..."
-cp $MY_TLD.zone $ZONE_DIR
+cp opennic.$MY_TLD $ZONE_DIR
 echo "Done"
 
 echo -n "Restarting BIND..."
