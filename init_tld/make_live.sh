@@ -7,7 +7,7 @@
 
 # change these to suit. they should be self-explanatory.
 TLD_DB=/var/www/opennic.oz/OZ_tld.sq3
-ZONE_DIR=/etc/bind/zones/
+ZONE_DIR=/var/cache/bind/opennic/master/
 OPENNIC_SUITE=/home/USER/opennic_tools/
 PRIMARY_IP=96.44.164.100
 SECONDARY_IP=96.44.164.101
@@ -30,7 +30,7 @@ echo "Done"
 
 echo -n "Generating TLD zone file..."
 cd $OPENNIC_SUITE
-./init_tld $MY_TLD $MY_HOST $MY_EMAIL $PRIMARY_IP $SECONDARY_IP > $MY_TLD.zone
+./init_tld $MY_TLD $MY_HOST $MY_EMAIL $PRIMARY_IP $SECONDARY_IP > opennic.$MY_TLD
 echo "Done"
 
 echo -n "Installing new zone file..."
