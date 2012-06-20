@@ -16,15 +16,15 @@
 	v0.3
 	- Improved initial opennic.TLD and register.TLD setup
 	
-	v0.4
+	v0.4 - 2012-06-10
 	- Full custom nameserver support is now implemented.
 */
 #include <stdio.h>
-#include <sqlite3.h>
 #include <time.h>
 #include <string.h>
-
-#define VERSION "0.3"
+/* #include <sqlite3.h> */
+#include "sqlite3.c"
+#define VERSION "0.4"
 // #define VERBOSE 1
 
 sqlite3 *db;
@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
 
 	/* do our preliminary setup */
 	/* opennic */
-	printf("opennic\t\t\tNS\tns1.opennic.%s\n", tld);
-	printf("\t\t\tNS\tns2.opennic.%s\n", tld);
+	printf("opennic\t\t\tNS\tns1.opennic\n");
+	printf("\t\t\tNS\tns2.opennic\n");
 	printf("$ORIGIN opennic.%s.\n", tld);
 	printf("ns1\t\t\tA\t%s\n", argv[4]);
 	printf("ns2\t\t\tA\t%s\n", argv[5]);
