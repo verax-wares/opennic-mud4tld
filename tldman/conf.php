@@ -48,6 +48,12 @@
    
    v0.66 - 2012-06-11
     -Further improved init_tld integration.
+    
+   v0.67 - 2012-06-14
+   - Added optional developer link for RM-API access.
+   
+   v0.68 - 2012-06-18
+   - Added simple framework for future MySQL support.
 */
 session_start();
 $TLD=".oz";
@@ -55,6 +61,11 @@ $ws_title="dot OZ";
 $domain_expires=1; // to allow domains to expire
 $sw_version="0.62";
 $dev_link=0;
+$mysql_support=0;
+$mysql_server="";
+$mysql_username="";
+$mysql_password="";
+$mysql_database="";
 
 function sqlite_open($location,$mode)
 {

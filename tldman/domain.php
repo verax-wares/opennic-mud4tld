@@ -217,11 +217,19 @@ if(isset($_REQUEST['action']))
 				die("Nameserver 1 is required.");
 			}
 			$ns1=$_POST['ns1'];
+			if($ns1=='')
+			{
+				die("Nameserver 1 is required.");
+			}
 			if(!isset($_POST['ns2']))
 			{
 				die("Nameserver 2 is required.");
 			}
 			$ns2=$_POST['ns2'];
+			if($ns2=='')
+			{
+				die("Nameserver 2 is required.");
+			}
 
 			/* deal with custom nameservers */
 			if(isset($_POST['ns1_ip']))

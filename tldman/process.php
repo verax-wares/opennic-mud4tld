@@ -29,6 +29,10 @@ if(isset($_POST['submit']))
 	{
 		echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die;
 	}
+	if( ($ns1=='') || ($ns2==''))
+	{
+		echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die;
+	}
 	if( ($ns1=="") || ($ns2==""))
 	{
 		echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die;
