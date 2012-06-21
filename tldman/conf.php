@@ -54,12 +54,15 @@
    
    v0.68 - 2012-06-18
    - Added simple framework for future MySQL support.
+   
+   v0.69 - 2012-06-22
+   - Further nameserver checking and validation.
 */
 session_start();
 $TLD=".oz";
 $ws_title="dot OZ";
 $domain_expires=1; // to allow domains to expire
-$sw_version="0.62";
+$sw_version="0.69";
 $dev_link=0;
 $mysql_support=0;
 $mysql_server="";

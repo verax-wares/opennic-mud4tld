@@ -17,15 +17,6 @@
 	- Complies a little better with http://www.ietf.org/rfc/rfc3912.txt
 	- Improved string and memory management.
 
-	WARNING!! WARNING!! WARNING!! WARNING!! WARNING!!
-	This is a big hack. This really needs to be
-	cleaned up, but it is functional for now. There
-	is some redundant code, and commented out code
-	everywhere as I tried to get the damn thing to
-	run. It seems socket programming really can be
-	intricate.
-	WARNING!! WARNING!! WARNING!! WARNING!! WARNING!!
-	
 	ADMIN NOTES:
 	* Compile with -DWHOIS_TEST for it to use port 4343 instead of 43 to try it out.
 	* Now takes -DDEBUG and -DVERBOSE as compile time options for debugging and more verbose output
@@ -69,11 +60,11 @@ struct {
 	char updated[11];
 	char dr_name[20];
 	char dr_email[50];
-    char ns1[30];
-    char ns2[30];
-    char ns1_ip[16];
-    char ns2_ip[16];
-    int status;
+	char ns1[30];
+	char ns2[30];
+	char ns1_ip[16];
+	char ns2_ip[16];
+	int status;
 } DOMAINRECORD;
 // DOMAINRECORD *record;
 

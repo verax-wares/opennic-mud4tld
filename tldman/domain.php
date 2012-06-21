@@ -230,7 +230,10 @@ if(isset($_REQUEST['action']))
 			{
 				die("Nameserver 2 is required.");
 			}
-
+			if( (strlen($ns1)<7) && (strlen($ns2)<7) )
+			{
+				die("Nameservers need to be at least 7 characters long.");
+			}
 			/* deal with custom nameservers */
 			if(isset($_POST['ns1_ip']))
 			{

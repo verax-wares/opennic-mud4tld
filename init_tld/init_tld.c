@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
 		{
 			if( (strcmp(sqlite3_column_text(res, 0), "register")) && (strcmp(sqlite3_column_text(res, 0), "opennic")))
 			{
+				if( (strlen(sqlite3_column_text(res, 1))>7) && (strlen(sqlite3_column_text(res, 2))>7))
+				{
 				printf("%-16s\tNS\t%s.\n", sqlite3_column_text(res, 0), sqlite3_column_text(res, 1));
 				printf("\t\t\tNS\t%s.\n", sqlite3_column_text(res, 2));
 				if(sqlite3_column_text(res, 3))
@@ -153,6 +155,7 @@ int main(int argc, char *argv[])
 					}
 					ns1_ip[0]='\0';
 					ns2_ip[0]='\0';
+				}
 				}
 			}
 		} else {
