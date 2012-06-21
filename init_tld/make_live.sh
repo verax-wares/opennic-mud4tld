@@ -14,6 +14,8 @@ SECONDARY_IP=96.44.164.101
 MY_EMAIL=hostmaster.opennic.oz
 MY_HOST=ns1.opennic.oz
 MY_TLD=oz
+BIND_USR=bind
+BIND_GRP=bind
 # end of modifications
 
 # detect if flag file exists indicating a change
@@ -36,6 +38,9 @@ echo "Done"
 echo -n "Installing new zone file..."
 cp opennic.$MY_TLD $ZONE_DIR
 echo "Done"
+
+chgrp $BIND_USR:$BIND_GRP $ZONE_DIR/opennic.$MY_TLD
+chmod g+rw $ZONE_DIR/opennic.$MY_TLD
 
 echo -n "Restarting BIND..."
 /etc/init.d/bind reload
