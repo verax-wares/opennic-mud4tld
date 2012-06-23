@@ -11,10 +11,10 @@ function delete_domain($domain)
 	show_header();
 
 	$userid=$_SESSION['userid'];
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$query = "SELECT userid FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
-	$results = sqlite_query($base, $query);
-	$arr=sqlite_fetch_array($results);
+	$results = sqlite_query_now($base, $query);
+	$arr=sqlite_fetch_array_now($results);
 	$real_userid=$arr['userid'];
 	if($userid != $real_userid)
 	{
@@ -23,7 +23,7 @@ function delete_domain($domain)
 	}
 	// echo "<center>This is in testing at the moment and is non-functional.<BR>Please try again at a later time.</center>";
 	$del_query="DELETE FROM domains WHERE domain='".$domain."'";
-	sqlite_query($base, $del_query);
+	sqlite_query_now($base, $del_query);
 	echo "<center><b>Domain deleted</b>. Changes may take up to 24 hours to take effect.</center>";
 }
 
@@ -52,10 +52,10 @@ function frm_view_domain($domain)
 
 	show_header();
 	$userid=$_SESSION['userid'];
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$query = "SELECT * FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
-	$results = sqlite_query($base, $query);
-	$arr=sqlite_fetch_array($results);
+	$results = sqlite_query_now($base, $query);
+	$arr=sqlite_fetch_array_now($results);
 	$real_userid=$arr['userid'];
 	if($userid != $real_userid)
 	{
@@ -99,10 +99,10 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	show_header();
 	$updated=strftime('%Y-%m-%d');
 	$userid=$_SESSION['userid'];
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$query = "SELECT userid FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
-	$results = sqlite_query($base, $query);
-	$arr=sqlite_fetch_array($results);
+	$results = sqlite_query_now($base, $query);
+	$arr=sqlite_fetch_array_now($results);
 	$real_userid=$arr['userid'];
 	if($userid != $real_userid)
 	{
@@ -121,7 +121,7 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	} else {
 		$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."', updated='".$updated."' WHERE domain='".$domain."'";
 	}
-	sqlite_query($base, $query);
+	sqlite_query_now($base, $query);
 	echo "Done. The changes should take effect within the hour. Please be aware some networks may not see the changes for up to 72 hours.<BR>";
 	if($ns1 == $ns2)
 	{

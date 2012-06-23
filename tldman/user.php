@@ -10,13 +10,13 @@ function login($username, $password)
 {
 	$username=htmlspecialchars(stripslashes($username));
 	$password=htmlspecialchars(stripslashes($password));
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$real_password=md5($password);
 	$query = "SELECT userid, username, email, country FROM users WHERE username='".$username."' AND password='".$real_password."' AND verified=1 LIMIT 1";
-	$results = sqlite_query($base, $query);
+	$results = sqlite_query_now($base, $query);
 	if(dbNumRows($results))
 	{
-		$arr=sqlite_fetch_array($results);
+		$arr=sqlite_fetch_array_now($results);
 		$_SESSION['username'] = $username;
 		$_SESSION['userid'] = $arr['userid'];
 		// $_SESSION['email'] = $arr['email'];
@@ -107,12 +107,12 @@ function register($username, $name, $email, $password)
 	fclose($fh);
 
 	/* prepare account */
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$real_password=md5($password);
 	date_default_timezone_set('Australia/Brisbane');
 	$registered=strftime('%Y-%m-%d');
 	$query = "INSERT INTO users (username, password, name, email, registered, verified) VALUES('".$username."', '".$real_password."', '".$name."', '".$email."', '".$registered."', 0)";
-	$results = sqlite_query($base, $query);
+	$results = sqlite_query_now($base, $query);
 	
 	/* construct email */
 	$msg_FROM = "FROM: hostmaster@opennic".$TLD."";
@@ -140,9 +140,9 @@ function dashboard()
 	// echo "<p align=\"right\"><a href=\"user.php?action=logout\">Logout</a></p>\n";
 	echo "<center><H2>Welcome to ".$username."'s Dashboard for ".$TLD."</H2>\n";
 	echo "<b>My ".$TLD." domains</b><BR><BR>";
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$query="SELECT domain, registered, expires FROM domains WHERE userid=".$userid."";
-	$results = sqlite_query($base, $query);
+	$results = sqlite_query_now($base, $query);
 	if(dbNumRows($results))
 	{
 		echo "<table width=\"400\" align=\"center\" border=0 cellspacing=1 cellpadding=0>\n";
@@ -153,7 +153,7 @@ function dashboard()
 		}
 		echo "</tr>\n";
 
-		while($arr=sqlite_fetch_array($results))
+		while($arr=sqlite_fetch_array_now($results))
 		{
 			echo "<tr><td><a href=\"domain.php?action=modify&domain=".$arr['domain']."\">".$arr['domain'].$TLD."</a></td><td>".$arr['registered']."</td>";
 			if($domain_expires==1)
@@ -169,9 +169,9 @@ function dashboard()
 	echo "You can register a new ".$TLD." <a href=\"check.php\">here</a>.";
 
 	$get_user_details="SELECT name, email, country FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
-	$base=sqlite_open("OZ_tld.sq3", 0666);
-	$get_user_details_results = sqlite_query($base, $get_user_details);
-	$get_user_details_arr=sqlite_fetch_array($get_user_details_results);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$get_user_details_results = sqlite_query_now($base, $get_user_details);
+	$get_user_details_arr=sqlite_fetch_array_now($get_user_details_results);
 	$name=$get_user_details_arr['name'];
 	$email=$get_user_details_arr['email'];
 	$country=$get_user_details_arr['country'];
@@ -225,8 +225,8 @@ function update_account($country, $password)
 	$password=htmlspecialchars(stripslashes($password));
 	$real_password=md5($password);
 	$query = "UPDATE users SET country='".$country."', password='".$real_password."' WHERE userid='".$userid."'";
-	$base=sqlite_open("OZ_tld.sq3", 0666);
-	sqlite_query($base, $query);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	sqlite_query_now($base, $query);
 	echo "Details updated.";
 }
 

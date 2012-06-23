@@ -57,6 +57,9 @@
    
    v0.69 - 2012-06-22
    - Further nameserver checking and validation.
+   
+   v0.70 - 2012-06-23
+   - Improved SQLite2-SQLite3 for PHP5 transition code.
 */
 session_start();
 $TLD=".oz";
@@ -70,13 +73,13 @@ $mysql_username="";
 $mysql_password="";
 $mysql_database="";
 
-function sqlite_open($location,$mode)
+function sqlite_open_now($location,$mode)
 {
     $handle = new SQLite3($location);
     return $handle;
 }
 
-function sqlite_query($dbhandle,$query)
+function sqlite_query_now($dbhandle,$query)
 {
     $array['dbhandle'] = $dbhandle;
     $array['query'] = $query;
@@ -84,7 +87,7 @@ function sqlite_query($dbhandle,$query)
     return $result;
 }
 
-function sqlite_fetch_array(&$result) //,$type)
+function sqlite_fetch_array_now(&$result) //,$type)
 {
     #Get Columns
     $i = 0;
@@ -101,7 +104,7 @@ function sqlite_fetch_array(&$result) //,$type)
 function dbNumRows($qid)
 {
   $numRows = 0;
-  while ($rowR = sqlite_fetch_array ($qid))
+  while ($rowR = sqlite_fetch_array_now($qid))
     $numRows++;
   $qid->reset ();
   return ($numRows);
@@ -113,10 +116,10 @@ function domain_taken($domain)
 	{
 		return 1;
 	}
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$query = "SELECT domain FROM domains WHERE domain='".$domain."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
-	$results = sqlite_query($base, $query);
+	$results = sqlite_query_now($base, $query);
 	if(dbNumRows($results))
 	{
 		return 1;
@@ -127,10 +130,10 @@ function domain_taken($domain)
 
 function username_taken($username)
 {
-	$base=sqlite_open("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
 	$query = "SELECT username FROM users WHERE username='".$username."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
-	$results = sqlite_query($base, $query);
+	$results = sqlite_query_now($base, $query);
 	if(dbNumRows($results))
 	{
 		return 1;

@@ -12,7 +12,7 @@ OPENNIC_SUITE=/home/USER/opennic_tools/
 PRIMARY_IP=96.44.164.100
 SECONDARY_IP=96.44.164.101
 MY_EMAIL=hostmaster.opennic.oz
-MY_HOST=ns1.opennic.oz
+MY_HOST=ns10.opennic.glue
 MY_TLD=oz
 BIND_USR=bind
 BIND_GRP=bind
@@ -39,11 +39,11 @@ echo -n "Installing new zone file..."
 cp opennic.$MY_TLD $ZONE_DIR
 echo "Done"
 
-chgrp $BIND_USR:$BIND_GRP $ZONE_DIR/opennic.$MY_TLD
+chgrp $BIND_GRP $ZONE_DIR/opennic.$MY_TLD
 chmod g+rw $ZONE_DIR/opennic.$MY_TLD
 
 echo -n "Restarting BIND..."
-/etc/init.d/bind reload
+/etc/init.d/bind9 reload
 echo "Done"
 
 # remove flag file
