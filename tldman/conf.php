@@ -60,6 +60,9 @@
    
    v0.70 - 2012-06-23
    - Improved SQLite2-SQLite3 for PHP5 transition code.
+   
+   v0.71 - 2012-07-07 (approx)
+   - Transitioning code to RM API.
 */
 session_start();
 $TLD="oz";
