@@ -62,16 +62,13 @@
    - Improved SQLite2-SQLite3 for PHP5 transition code.
 */
 session_start();
-$TLD="oz";
+$TLD=".oz";
 $ws_title="dot OZ";
 $domain_expires=1; // to allow domains to expire
-$sw_version="0.75";
+$sw_version="0.69";
 $dev_link=0;
-$user="TEST01"; /* for registrars */
-$userkey="1234567890abcdef"; /* for registrars */
-$tld_svr="http://opennic.oz/rm_api.cgi";
 $mysql_support=0;
-$mysql_server="localhost";
+$mysql_server="";
 $mysql_username="";
 $mysql_password="";
 $mysql_database="";
@@ -115,16 +112,20 @@ function dbNumRows($qid)
 
 function domain_taken($domain)
 {
-	global $TLD, $user, $userkey, $tld_server;
 	if($domain=="register" || $domain=="opennic" || $domain=="example")
 	{
 		return 1;
 	}
-	$URL=$tld_svr."?cmd=check&user=".$user."&userkey=".$userkey."&tld=".$TLD."&domain=".$domain;
-	$handle=fopen($URL, "r");
-	$ret_data=fread($handle, 1024);
-	fclose($handle);
-	return $ret_data;
+	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$query = "SELECT domain FROM domains WHERE domain='".$domain."' LIMIT 1";
+	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
+	$results = sqlite_query_now($base, $query);
+	if(dbNumRows($results))
+	{
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 function username_taken($username)
@@ -145,7 +146,7 @@ function show_header()
 {
 	global $ws_title, $TLD;
 	echo "<html>\n<head>\n<title>".$ws_title."</title>\n</head>\n<body>\n";
-	echo "<p align=\"left\"><a href=\"index.php\">opennic.".$TLD."</a></p>\n";
+	echo "<p align=\"left\"><a href=\"index.php\">opennic".$TLD."</a></p>\n";
 	if(!isset($_SESSION['username']))
 	{
 		echo "<p align=\"right\">Already have an account? <a href=\"user.php?action=frm_login\">Log in</a> or <a href=\"user.php?action=frm_register\">Register</a></p>\n";
@@ -189,4 +190,5 @@ function unique_id($l = 8)
 {
 	return substr(md5(uniqid(mt_rand(), true)), 0, $l);
 }
+
 ?>
