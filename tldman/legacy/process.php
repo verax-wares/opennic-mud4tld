@@ -68,7 +68,7 @@ if(isset($_POST['submit']))
 		die;
 	}
 	$get_user_details="SELECT name, email FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$get_user_details_results = sqlite_query_now($base, $get_user_details);
 	$get_user_details_arr=sqlite_fetch_array_now($get_user_details_results);
 	$name=$get_user_details_arr['name'];
@@ -83,7 +83,7 @@ if(isset($_POST['submit']))
 		$query = "INSERT INTO domains (domain, name, email, ns1, ns2, registered, expires, updated, userid) VALUES('".$domain."', '".$name."', '".$email."', '".$ns1."', '".$ns2."', '".$rightnow."', '".$expires."', '".$rightnow."', '".$userid."')";
 	}
 	// echo "DEBUG: [".$query."]";
-	// $base=sqlite_open_now("OZ_tld.sq3", 0666);
+	// $base=sqlite_open_now($tld_db, 0666);
 	sqlite_query_now($base, $query);
 
 	/* flag init_tld */

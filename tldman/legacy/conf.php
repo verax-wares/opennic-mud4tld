@@ -60,6 +60,9 @@
    
    v0.70 - 2012-06-23
    - Improved SQLite2-SQLite3 for PHP5 transition code.
+   
+   v0.71 (Legacy) - 2012-07-13
+   - Improved template database handling for legacy.
 */
 session_start();
 $TLD=".oz";
@@ -72,6 +75,7 @@ $mysql_server="";
 $mysql_username="";
 $mysql_password="";
 $mysql_database="";
+$tld_db="OZ_tld.sq3";
 
 function sqlite_open_now($location,$mode)
 {
@@ -112,11 +116,13 @@ function dbNumRows($qid)
 
 function domain_taken($domain)
 {
+	global $tld_db;
+
 	if($domain=="register" || $domain=="opennic" || $domain=="example")
 	{
 		return 1;
 	}
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$query = "SELECT domain FROM domains WHERE domain='".$domain."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
 	$results = sqlite_query_now($base, $query);
@@ -130,7 +136,9 @@ function domain_taken($domain)
 
 function username_taken($username)
 {
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	global $tld_db;
+
+	$base=sqlite_open_now($tld_db, 0666);
 	$query = "SELECT username FROM users WHERE username='".$username."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
 	$results = sqlite_query_now($base, $query);

@@ -34,7 +34,7 @@ if(isset($_REQUEST['username']))
 	unlink($myFile);
 
 	$query = "UPDATE users SET verified=1 WHERE username='".$clean_username."'";
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	sqlite_query_now($base, $query);
 	show_header();
 	echo "Your account for ".$clean_username." is now confirmed. You may now login using the link above to start registering domains.";

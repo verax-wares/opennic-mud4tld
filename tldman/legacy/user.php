@@ -8,9 +8,11 @@ include("conf.php");
 
 function login($username, $password)
 {
+	global $tld_db;
+
 	$username=htmlspecialchars(stripslashes($username));
 	$password=htmlspecialchars(stripslashes($password));
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$real_password=md5($password);
 	$query = "SELECT userid, username, email, country FROM users WHERE username='".$username."' AND password='".$real_password."' AND verified=1 LIMIT 1";
 	$results = sqlite_query_now($base, $query);
@@ -72,7 +74,7 @@ function form_register()
 
 function register($username, $name, $email, $password)
 {
-	global $TLD;
+	global $TLD, $tld_db;
 
 	show_header();
 	
@@ -107,7 +109,7 @@ function register($username, $name, $email, $password)
 	fclose($fh);
 
 	/* prepare account */
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$real_password=md5($password);
 	date_default_timezone_set('Australia/Brisbane');
 	$registered=strftime('%Y-%m-%d');
@@ -131,7 +133,7 @@ function register($username, $name, $email, $password)
 
 function dashboard()
 {
-	global $TLD, $domain_expires;
+	global $TLD, $domain_expires, $tld_db;
 	show_header();
 	
 	$username=$_SESSION['username'];
@@ -140,7 +142,7 @@ function dashboard()
 	// echo "<p align=\"right\"><a href=\"user.php?action=logout\">Logout</a></p>\n";
 	echo "<center><H2>Welcome to ".$username."'s Dashboard for ".$TLD."</H2>\n";
 	echo "<b>My ".$TLD." domains</b><BR><BR>";
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$query="SELECT domain, registered, expires FROM domains WHERE userid=".$userid."";
 	$results = sqlite_query_now($base, $query);
 	if(dbNumRows($results))
@@ -169,7 +171,7 @@ function dashboard()
 	echo "You can register a new ".$TLD." <a href=\"check.php\">here</a>.";
 
 	$get_user_details="SELECT name, email, country FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$get_user_details_results = sqlite_query_now($base, $get_user_details);
 	$get_user_details_arr=sqlite_fetch_array_now($get_user_details_results);
 	$name=$get_user_details_arr['name'];
@@ -216,6 +218,8 @@ if(strlen($country)>0)
 
 function update_account($country, $password)
 {
+	global $tld_db;
+
 	show_header();
 	if(!isset($_SESSION['userid']))
 	{
@@ -225,7 +229,7 @@ function update_account($country, $password)
 	$password=htmlspecialchars(stripslashes($password));
 	$real_password=md5($password);
 	$query = "UPDATE users SET country='".$country."', password='".$real_password."' WHERE userid='".$userid."'";
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	sqlite_query_now($base, $query);
 	echo "Details updated.";
 }

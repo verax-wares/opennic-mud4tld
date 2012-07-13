@@ -8,10 +8,11 @@ include("conf.php");
 
 function delete_domain($domain)
 {
+	global $tld_db;
 	show_header();
 
 	$userid=$_SESSION['userid'];
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$query = "SELECT userid FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
 	$results = sqlite_query_now($base, $query);
 	$arr=sqlite_fetch_array_now($results);
@@ -48,11 +49,11 @@ function frm_delete_domain($domain)
 
 function frm_view_domain($domain)
 {
-	global $TLD;
+	global $TLD, $tld_db;
 
 	show_header();
 	$userid=$_SESSION['userid'];
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$query = "SELECT * FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
 	$results = sqlite_query_now($base, $query);
 	$arr=sqlite_fetch_array_now($results);
@@ -94,12 +95,12 @@ function frm_view_domain($domain)
 
 function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 {
-	global $TLD;
+	global $TLD, $tld_db;
 
 	show_header();
 	$updated=strftime('%Y-%m-%d');
 	$userid=$_SESSION['userid'];
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	$base=sqlite_open_now($tld_db, 0666);
 	$query = "SELECT userid FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
 	$results = sqlite_query_now($base, $query);
 	$arr=sqlite_fetch_array_now($results);
