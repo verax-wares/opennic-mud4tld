@@ -63,6 +63,10 @@
    
    v0.71 - 2012-07-07 (approx)
    - Transitioning code to RM API.
+   
+   v0.72 - 2012-07-13
+   - Moved more DB-specific stuff to conf.php to allow a more abstract framework for additional DB system support.
+   - Added more basic MySQL support.
 */
 session_start();
 $TLD="oz";
@@ -78,18 +82,30 @@ $mysql_server="localhost";
 $mysql_username="";
 $mysql_password="";
 $mysql_database="";
+$tld_db="OZ_users.sq3";
 
 function sqlite_open_now($location,$mode)
 {
-    $handle = new SQLite3($location);
-    return $handle;
+    if($mysql_support==1)
+    {
+		$handle=mysql_connect($mysql_server, $mysql_username, $mysql_password) or die("MySQL error");
+		mysql_select_db($mysql_database, $handle);
+	} else {
+		$handle = new SQLite3($location);
+	}
+	return $handle;
 }
 
 function sqlite_query_now($dbhandle,$query)
 {
-    $array['dbhandle'] = $dbhandle;
-    $array['query'] = $query;
-    $result = $dbhandle->query($query);
+	if($mysql_support==1)
+	{
+		$result = mysql_query($query, $dbhandle);
+	} else {
+		$array['dbhandle'] = $dbhandle;
+		$array['query'] = $query;
+		$result = $dbhandle->query($query);
+	}
     return $result;
 }
 
@@ -132,7 +148,8 @@ function domain_taken($domain)
 
 function username_taken($username)
 {
-	$base=sqlite_open_now("OZ_tld.sq3", 0666);
+	global $tld_db;
+	$base=sqlite_open_now($tld_db, 0666);
 	$query = "SELECT username FROM users WHERE username='".$username."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
 	$results = sqlite_query_now($base, $query);
@@ -191,5 +208,13 @@ function validateIPAddress($ip_addr)
 function unique_id($l = 8)
 {
 	return substr(md5(uniqid(mt_rand(), true)), 0, $l);
+}
+
+function confirm_user($username)
+{
+	global $tld_db;
+	$query = "UPDATE users SET verified=1 WHERE username='".$username."'";
+	$base=sqlite_open_now($tld_db, 0666);
+	sqlite_query_now($base, $query);
 }
 ?>
