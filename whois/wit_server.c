@@ -16,6 +16,9 @@
 	Version 0.4
 	- Complies a little better with http://www.ietf.org/rfc/rfc3912.txt
 	- Improved string and memory management.
+    
+    Version 0.5 - 2012-08-29
+    - Small bunch of fixed.
 
 	ADMIN NOTES:
 	* Compile with -DWHOIS_TEST for it to use port 4343 instead of 43 to try it out.
@@ -24,6 +27,7 @@
 	DEV NOTES:
 	* I recommend a tab-width of 4.
 	* Needs more templating work.
+    * Still needs to separately parse the TLD. Hard coded to .OZ for now. Easy to change to re-compile, but some domain handling code depends on 2 letter TLD plus the dot. Will fix.
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,7 +96,7 @@ int query_domain(char domainname[50])
 	rc = sqlite3_open("OZ_tld.sq3", &db);
 	if(rc)
 	{
-		fprintf(stderr, "Can't open package database.");
+		fprintf(stderr, "Can't open WHOIS database.");
 		sqlite3_close(db);
 		return 0;
 	}
@@ -105,7 +109,7 @@ int query_domain(char domainname[50])
 	rc = sqlite3_prepare_v2(db, sql_str, 1024, &res, 0);
 	if(rc != SQLITE_OK)
 	{
-		fprintf(stderr, "The package database file is corrupt!");
+		fprintf(stderr, "The WHOIS database file is corrupt!");
 		sqlite3_free(zErrMsg);
 		sqlite3_close(db);
 		return 0;
@@ -204,7 +208,7 @@ int main (int argc, char *argv[])
 				printf("Domain: %s\nRegistered: %s\nName: %s\nEmail: %s\n\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email); /* this is probably not needed anymore. M. */
 					#endif
 				#endif
-				sprintf(return_buffer, "Welcome to the OpenNIC Registry!\r\nDomain: %s.oz\r\nDomain Registered: %s\r\nDomain Expires: %s\r\nDomain Updated: %s\r\nDomain Status: Active\r\nRegistrant Name: %s\r\nRegistrant Email: %s\r\nNS1: %s\r\nNS2: %s\r\nRegistrar URL: www.opennic.oz\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.expires, DOMAINRECORD.updated, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email, DOMAINRECORD.ns1, DOMAINRECORD.ns1);
+				sprintf(return_buffer, "Welcome to the OpenNIC Registry!\r\nDomain: %s.oz\r\nDomain Registered: %s\r\nDomain Expires: %s\r\nDomain Updated: %s\r\nDomain Status: Active\r\nRegistrant Name: %s\r\nRegistrant Email: %s\r\nNS1: %s\r\nNS2: %s\r\nRegistrar URL: www.opennic.oz\r\n", DOMAINRECORD.dr_domain, DOMAINRECORD.dr_registered, DOMAINRECORD.expires, DOMAINRECORD.updated, DOMAINRECORD.dr_name, DOMAINRECORD.dr_email, DOMAINRECORD.ns1, DOMAINRECORD.ns2);
 				send(newSd, return_buffer, RB_LENGTH, 0);
 			}
 			memset(line, 0, MAX_MSG);
