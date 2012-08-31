@@ -1,7 +1,6 @@
 <?php
 /*
-   MUD4TLD v0.61
-   Martin's User and Domain system for Top Level Domains.
+   MUD4TLD - Martin's User and Domain system for Top Level Domains.
    (C) 2012 Martin COLEMAN. All rights reserved.
    Licensed under Basic Software License v1.0 (see COPYING for details)
    Made for the OpenNIC Project.
@@ -67,6 +66,14 @@
    v0.72 - 2012-07-13
    - Moved more DB-specific stuff to conf.php to allow a more abstract framework for additional DB system support.
    - Added more basic MySQL support.
+
+   v0.75 - 2012-07-??
+   - Bunch of small fixes.
+   - Refactored a bit for better RM API support.
+   
+   v0.76 - 2012-08-30
+   - Fixed a few WIP bugs and glitches.
+   - Improved some more RM-API integration code.
 */
 session_start();
 $TLD="oz";
@@ -76,13 +83,13 @@ $sw_version="0.75";
 $dev_link=0;
 $user="TEST01"; /* for registrars */
 $userkey="1234567890abcdef"; /* for registrars */
-$tld_svr="http://opennic.oz/rm_api.cgi";
+$tld_svr="http://opennic.".$TLD."/rm/rm_api.cgi";
 $mysql_support=0;
 $mysql_server="localhost";
 $mysql_username="";
 $mysql_password="";
 $mysql_database="";
-$tld_db="OZ_users.sq3";
+$tld_db=$TLD."_users.sq3";
 
 function sqlite_open_now($location,$mode)
 {

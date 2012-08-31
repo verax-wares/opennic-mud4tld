@@ -95,7 +95,7 @@ echo "<input type=\"hidden\" name=\"domain\" value=\"".$domain."\">\n";
 
 function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 {
-	global $TLD;
+	global $TLD, $user, $userkey;
 
 	$userid=$_SESSION['userid'];
 	$username=$_SESSION['username'];
@@ -178,27 +178,27 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 function delete_domain($domain)
 {
 	global $tld_svr, $user, $userkey, $TLD;
-	show_header();
 
+	show_header();
 	$userid=$_SESSION['userid'];
-	$URL=$tld_svr."?cmd=check&user=".$user."&userkey=".$userkey."&tld=".$TLD."&domain=".$domain;
+	$URL=$tld_svr."?cmd=delete&user=".$user."&userkey=".$userkey."&tld=".$TLD."&domain=".$domain;
 	$handle=fopen($URL, "r");
 	$ret_data=fread($handle, 10);
 	fclose($handle);
 	switch($ret_data)
 	{
-	case "0":
-		echo "<center><b>Error, domain not deleted</b>. Possibly an administrative glitch.</center>";
-		break;
-	case "1":
-		echo "<center><b>Domain deleted</b>. Changes may take up to 24 hours to take effect.</center>";
-		break;
-	case "255":
-		echo "Server error occured.";
-		break;
-	default:
-		echo "An unknown problem has occured. Please try again later.";
-		break;
+        case "0":
+            echo "<center><b>Error, domain not deleted</b>. Possibly an administrative glitch.</center>";
+            break;
+        case "1":
+            echo "<center><b>Domain deleted</b>. Changes may take up to 24 hours to take effect.</center>";
+            break;
+        case "255":
+            echo "Server error occured.";
+            break;
+        default:
+            echo "An unknown problem has occured. Please try again later.";
+            break;
 	}
 }
 
@@ -302,13 +302,6 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	{
 		echo "<b>Please Note:</b> We highly recommend that you use two different nameserver values instead of the same one.";
 	}
-	/* flag init_tld */
-	/* not needed anymore
-	$inittld_file="/tmp/inittld.flag";
-	$fh=fopen($inittld_file, 'w');
-	fwrite($fh, "1");
-	fclose($fh);
-	*/
 }
 
 function check_domain($domain)
@@ -327,7 +320,6 @@ function check_domain($domain)
 		echo "Please go back and try again.";
 		die;
 	}
-	// $name=$name.$TLD; removed for v0.3
 	if(strlen($name)>1)
 	{
 		echo "Checking ".$name.$TLD." for you...";
