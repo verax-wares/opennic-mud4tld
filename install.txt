@@ -1,10 +1,10 @@
-Installation of MUD4TLD
+Installation of Regnum (formerly MUD4TLD)
 
-NOTE: You will need a C compiler installed. Any Unix/Linux should already have one, so you should be good to go. You will also need SQLite3 installed, as well as the library and header files. This is essential.
+NOTE: You will need a C compiler installed. Any Unix/Linux distro should already have one, so you should be good to go. You will also need SQLite3 installed, as well as the library and header files. This is essential. I also highly recommend the "screen" program, or similar, to be installed if you want to run the WHOIS server.
 
 The Interface:
 
-[1] By whatever method applies to your Linux distribution or FreeBSD, install a web server with PHP support if you have not already done so. I recommend lighttpd with PHP5, but it is up to you.
+[1] By whatever method applies to your Linux distribution or FreeBSD, install a web server with PHP support if you have not already done so. I recommend lighttpd or nginx with PHP5, but it is up to you.
 
 [2] At the command line (change the uppercase TLD to your specified TLD below):
 
@@ -21,15 +21,15 @@ The WHOIS server:
 
 gcc -o wit_server wit_server.c -lsqlite3
 
-[2] Make sure a copy of the above DB is in the same directory. Now, as root run
+[2] Make sure a copy of the above DB is in the same directory.
 
-wit_server &
+[3] Now, as root, create a new "screen" session and run
+
+wit_server
 
 The WHOIS server is now running.
 
 
 Initialise the TLD/Generate the ZONE file.
 
-[1] Instructions are in filelist.txt, but will be transferred and expanded on here. For now, these rush instructions should do.
-
-I recommend a CRON job script to copy the site DB to where the WHOIS server can see it, probably every little while, so domain changes can be seen. A CRON job script to re-initialise the TLD will be supplied shortly.
+This is seen in init_tld/make_live.sh. This script shows how to check to see if a change needs to be made, re-generates the zone file using your TLD operator details and then reloads BIND. This script can be run as a cron job to automate this process. I recommend every 5-15 minutes, but whatever you prefer is fine.
