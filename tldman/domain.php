@@ -51,10 +51,10 @@ function check_domain($domain)
 
 function frm_register_domain($domain)
 {
-	global $TLD;
+	global $TLD, $ws_title;
 ?>
 <table width="500" align="center">
-<tr><td align="center"><h1>dot OZ Registration</h1></td></tr>
+<tr><td align="center"><h1><?php echo $ws_title; ?> Registration</h1></td></tr>
 <tr><td>
 <p>Please fill out the information below. Make sure the details are correct before clicking "Register Domain" as incorrect details may delay the registration process.</p>
 </td></tr>
