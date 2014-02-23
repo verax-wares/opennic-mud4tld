@@ -1,7 +1,7 @@
 <?php
 /*
     By Martin COLEMAN (C) 2012. All rights reserved.
-    Released under the Basic Software License v1.0.
+    Released under the 2-clause BSD license.
     See COPYING file for details.
 */
 include("conf.php");
