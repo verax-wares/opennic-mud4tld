@@ -124,10 +124,10 @@ function register($username, $name, $email, $password)
 	$msg .= "Username: ".$username."\n";
 	$msg .= "Password: (The one you specified during sign up. Remember, this is encrypted and cannot be retrieved.)\n\n";
 	$msg .= "Always ensure your contact details are up to date.\n\n";
-	$msg .= "To confirm this email and activate your account, please visit http://opennic".$TLD."/confirm.php?username=".$username."&userkey=".$userkey."\nYou have 24 hours to activate your account, otherwise it will be deleted.\n\n";
+	$msg .= "To confirm this email and activate your account, please visit http://opennic.".$TLD."/confirm.php?username=".$username."&userkey=".$userkey."\nYou have 24 hours to activate your account, otherwise it will be deleted.\n\n";
 	$msg .= "Thank you for your patronage.\nOpenNIC".$TLD." Administration.\n";
 	mail($email, $msg_subject, $msg, $msg_FROM);
-	echo "If registration was successful, you should receive an email shortly. Please contact hostmaster@opennic".$TLD." if you do not receive one within 24 hours. Please ensure that email address is on your email whitelist.";
+	echo "If registration was successful, you should receive an email shortly. Please contact hostmaster@opennic.".$TLD." if you do not receive one within 24 hours. Please ensure that email address is on your email whitelist.";
 	// echo "DEBUG: [".$msg."]";
 }
 
