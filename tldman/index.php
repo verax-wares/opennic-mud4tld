@@ -1,4 +1,5 @@
 <?php
+/* Sample index page. Do what you want with it. Public domain. */
 include("conf.php");
 show_header();
 ?>
@@ -9,8 +10,8 @@ show_header();
 <p>dot OZ is the TLD (Top Level Domain) custom made for Australians, but still available to everyone. dot OZ is targeted to those who may want a domain with the cultural association with Australia, but without the requirements of .com.au, net.au or org.au registrations.</p>
 <p>Registering a dot OZ is completely free<sup>*</sup>.</p>
 <p align="center">
-<form action="check.php" method="post">
-Check domain <input type="text" name="domain">.OZ&nbsp;<input type="submit" name="check" value="Check!">
+<form action="domain.php" method="post">
+Check domain <input type="text" name="domain">.OZ&nbsp;<input type="hidden" name="action" value="check"><input type="submit" value="Check!">
 </form>
 </p>
 <p>&nbsp;</p>

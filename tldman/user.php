@@ -1,7 +1,7 @@
 <?php
 /*
-    By Martin COLEMAN (C) 2012. All rights reserved.
-    Released under the Basic Software License v1.0.
+    By Martin COLEMAN (C) 2012-2014. All rights reserved.
+    Released under the 2-clause BSD license.
     See COPYING file for details.
 */
 include("conf.php");
@@ -168,7 +168,7 @@ function dashboard()
 	} else {
 		echo "You do not have any domains registered.\n";
 	}
-	echo "You can register a new ".$TLD." <a href=\"check.php\">here</a>.";
+	echo "You can register a new ".$TLD." <a href=\"domain.php\">here</a>.";
 
 	$get_user_details="SELECT name, email, country FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
 	$base=sqlite_open_now($tld_db, 0666);

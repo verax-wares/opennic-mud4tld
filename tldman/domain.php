@@ -1,7 +1,7 @@
 <?php
 /*
-    By Martin COLEMAN (C) 2012. All rights reserved.
-    Released under the Basic Software License v1.0.
+    By Martin COLEMAN (C) 2012-2014. All rights reserved.
+    Released under the 2-clause BSD license.
     See COPYING file for details.
 */
 include("conf.php");
@@ -11,7 +11,7 @@ function form_check_domain()
 	global $TLD;
 ?>
 <p>
-<form action="check.php" method="post">
+<form action="domain.php" method="post">
 Domain name <input type="text" name="domain"><?php echo $TLD; ?>&nbsp;<input type="submit" name="check" value="Check">
 </form>
 </p>
@@ -59,7 +59,7 @@ function frm_register_domain($domain)
 <p>Please fill out the information below. Make sure the details are correct before clicking "Register Domain" as incorrect details may delay the registration process.</p>
 </td></tr>
 <tr><td align="center">
-<p><br><font color="#008000">You are registering <b><?php echo $domain.".".$TLD; ?></b></font><BR>To register a different domain, please <a href="check.php">check</a> it first.</p>
+<p><br><font color="#008000">You are registering <b><?php echo $domain.".".$TLD; ?></b></font><BR>To register a different domain, please <a href="domain.php">check</a> it first.</p>
 <?php
 if(!isset($_SESSION['username']))
 {
