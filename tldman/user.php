@@ -140,8 +140,8 @@ function dashboard()
 	$userid=$_SESSION['userid'];
 
 	// echo "<p align=\"right\"><a href=\"user.php?action=logout\">Logout</a></p>\n";
-	echo "<center><H2>Welcome to ".$username."'s Dashboard for ".$TLD."</H2>\n";
-	echo "<b>My ".$TLD." domains</b><BR><BR>";
+	echo "<center><H2>Welcome to ".$username."'s Dashboard for .".$TLD."</H2>\n";
+	echo "<b>My .".$TLD." domains</b><BR><BR>";
 	$base=sqlite_open_now($tld_db, 0666);
 	$query="SELECT domain, registered, expires FROM domains WHERE userid=".$userid."";
 	$results = sqlite_query_now($base, $query);
@@ -181,7 +181,7 @@ function dashboard()
 <BR><BR>
 <form action="user.php" method="post">
 <table width="450" align="center">
-<tr><td colspan="2" align="center"><b><?php echo $TLD; ?> User Details</b></td></tr>
+<tr><td colspan="2" align="center"><b>.<?php echo $TLD; ?> User Details</b></td></tr>
 <tr><td>Name</td><td><?php echo $name; ?></td></tr>
 <tr><td>Email</td><td><?php echo $email; ?><sup>*</sup></td></tr>
 <tr><td>Country</td><td>
@@ -196,6 +196,7 @@ if(strlen($country)>0)
 ?>
 <option>------</option>
 <option value="AU">Australia</option>
+<option value="CA">Canada</option>
 <option value="DE">Germany</option>
 <option value="UK">United Kingdom</option>
 <option value="US">United States</option>
