@@ -119,7 +119,7 @@ function register($username, $name, $email, $password)
 	/* construct email */
 	$msg_FROM = "FROM: hostmaster@opennic".$TLD."";
 	$msg_subject = "OpenNIC".$TLD." User Registration.";
-	$msg = "Welcome ".$name." to OpenNIC".$TLD."!\n\n";
+	$msg = "Welcome ".$name." to OpenNIC.".$TLD."!\n\n";
 	$msg .= "Your details are:\n";
 	$msg .= "Username: ".$username."\n";
 	$msg .= "Password: (The one you specified during sign up. Remember, this is encrypted and cannot be retrieved.)\n\n";
@@ -168,7 +168,7 @@ function dashboard()
 	} else {
 		echo "You do not have any domains registered.\n";
 	}
-	echo "You can register a new ".$TLD." <a href=\"domain.php\">here</a>.";
+	echo "You can register a new ".$TLD." <a href=\"domain.php?action=frm_check_domain\">here</a>.";
 
 	$get_user_details="SELECT name, email, country FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
 	$base=sqlite_open_now($tld_db, 0666);

@@ -12,7 +12,8 @@ function form_check_domain()
 ?>
 <p>
 <form action="domain.php" method="post">
-Domain name <input type="text" name="domain"><?php echo $TLD; ?>&nbsp;<input type="submit" name="check" value="Check">
+Domain name <input type="text" name="domain">.<?php echo $TLD; ?>&nbsp;<input type="submit" name="check" value="Check">
+<input type="hidden" name="action" value="check_domain">
 </form>
 </p>
 <?php
@@ -34,7 +35,7 @@ function check_domain($domain)
 		echo "Please go back and try again.";
 		die;
 	}
-	if(strlen($name)>1)
+	if(strlen($name)>2)
 	{
 		echo "Checking ".$name.".".$TLD." for you...";
 		if(domain_taken($name))
@@ -304,7 +305,7 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	}
 }
 
-function check_domain($domain)
+function check_domain1($domain)
 {
 	/* sanity check the domain */
 	$name=htmlspecialchars(stripslashes($domain));
