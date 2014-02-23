@@ -1,4 +1,4 @@
-CREATE TABLE oz_domains (
+CREATE TABLE domains (
 domain VARCHAR(64) PRIMARY KEY,
 name VARCHAR(20) NOT NULL,
 email VARCHAR(50) NOT NULL,
