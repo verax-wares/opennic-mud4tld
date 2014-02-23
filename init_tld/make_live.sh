@@ -1,16 +1,15 @@
 #!/bin/sh
 # OpenNIC MUD4TLD operations script.
-# By Martin COLEMAN (C) 2012. mud4tld@mchomenet.info.
-# Can be freely used by the OpenNIC community.
+# By Martin COLEMAN (C) 2012-2014.
 # To install change the following to appropriate settings for your TLD and configuration,
 # especially the OpenNIC suite, and run. A cron job could be handy too.
 
 # change these to suit. they should be self-explanatory.
-TLD_DB=/var/www/opennic.oz/OZ_tld.sq3
+TLD_DB=/home/martin/public_html/opennic.oz/oz_tld.sq3
 ZONE_DIR=/var/cache/bind/opennic/master/
-OPENNIC_SUITE=/home/USER/opennic_tools/
-PRIMARY_IP=96.44.164.100
-SECONDARY_IP=96.44.164.101
+OPENNIC_SUITE=/home/martin/opennic_tmp/
+PRIMARY_IP=103.4.16.80
+SECONDARY_IP=103.4.16.80
 MY_EMAIL=hostmaster.opennic.oz
 MY_HOST=ns10.opennic.glue
 MY_TLD=oz
