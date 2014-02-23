@@ -21,6 +21,7 @@ Domain name <input type="text" name="domain">.<?php echo $TLD; ?>&nbsp;<input ty
 
 function check_domain($domain)
 {
+    global $TLD;
 	/* sanity check the domain */
 	$name=htmlspecialchars(stripslashes($domain));
 	$name=preg_replace("/[^a-zA-Z0-9\-]/","", $name); /* replace characters we do not want */

@@ -147,7 +147,7 @@ function dbNumRows($qid)
 
 function domain_taken($domain)
 {
-	global $TLD, $user, $userkey, $tld_server;
+	global $TLD, $user, $userkey, $tld_svr;
 	if($domain=="register" || $domain=="opennic" || $domain=="example")
 	{
 		return 1;
