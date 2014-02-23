@@ -1,6 +1,6 @@
 /*
 	Initialise TLD
-	By Martin COLEMAN (C) 2012-2013. All rights reserved.
+	By Martin COLEMAN (C) 2012-2014. All rights reserved.
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met: 
 
@@ -21,10 +21,11 @@
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-	Compile via gcc -o init_tld main.c -lsqlite3
-	Tiny C Compiler should work well too.
-	Licensed under the Basic Software License v1.0.
+    TO BUILD:
+	Compile via $CC -o init_tld init_tld.c -lsqlite3
+    Where $CC can be gcc, clang or tcc.
 	
+    VERSION HISTORY:
 	v0.1
 	- Extract domain info from OZ_tld.sq3
 	- Prepare outline of zone file
@@ -41,14 +42,22 @@
 	
 	v0.4a - 2013-04-06
 	- Released under BSD 2 clause license.
+    
+    v0.5 - 2014-02-23
+    - Removed redundant wording about old license.
+    - Improved TLD templating.
+    - Clarified compilation note above.
 */
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-/* #include <sqlite3.h> */
-#include "sqlite3.c"
-#define VERSION "0.4a"
-// #define VERBOSE 1
+#include <sqlite3.h>
+/* #include "sqlite3.c" */
+#define VERSION "0.5"
+/* TLD CHANGE - Change these to suit */
+#define TLD ".oz"
+#define TLD_DB "oz_tld.sq3"
+/* #define VERBOSE 1 */
 
 sqlite3 *db;
 sqlite3_stmt *res;
@@ -89,7 +98,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Processing .%s ", tld);
 	fprintf(stderr, "using serial: %d%d%d%d%d...", (now->tm_year+1900), (now->tm_mon+1), now->tm_mday, now->tm_hour, now->tm_min);
 	#endif
-	rc = sqlite3_open("OZ_tld.sq3", &db);
+	rc = sqlite3_open(TLD_DB, &db);
 	if(rc)
 	{
 		fprintf(stderr, "Can't open domain database.\n");
@@ -101,7 +110,8 @@ int main(int argc, char *argv[])
 	printf("$ORIGIN .\n");
 	printf("$TTL 86400\t; 1 day\n");
 	printf("%-8s\t\tIN SOA %s. %s. (\n", tld, argv[2], argv[3]);
-	printf("\t\t\t\t%d%d%d%d%d  ; serial\n", (now->tm_year+1900), (now->tm_mon+1), now->tm_mday, now->tm_hour, now->tm_min);
+	/* printf("\t\t\t\t%d%02d%02d%02d%02d  ; serial\n", (now->tm_year+1900), (now->tm_mon+1), now->tm_mday, now->tm_hour, now->tm_min); */
+	printf("\t\t\t\t%d%02d%02d%02d  ; serial\n", (now->tm_year+1900), (now->tm_mon+1), now->tm_mday, now->tm_hour);
 	printf("\t\t\t\t10800\t; refresh\n");
 	printf("\t\t\t\t3600\t; retry\n");
 	printf("\t\t\t\t1209600\t; expire\n");
@@ -157,20 +167,20 @@ int main(int argc, char *argv[])
 					sprintf(ns1_ip, "%s", sqlite3_column_text(res, 3));
 					sprintf(ns2_ip, "%s", sqlite3_column_text(res, 4));
 					/* mega hack following */
-					// printf("NS1: [%s]\nNS2: [%s]\n", ns1_ip, ns2_ip); /* FOR DEBUGGING ONLY */
-					if(strstr(ns1, ".oz"))
+					/* printf("NS1: [%s]\nNS2: [%s]\n", ns1_ip, ns2_ip);*/ /* FOR DEBUGGING ONLY */
+					if(strstr(ns1, TLD))
 					{
 						printf("$ORIGIN %s.%s.\n", sqlite3_column_text(res, 0), tld);
 						subdomain_cp=strdup(ns1);
 						subdomain=strtok(subdomain_cp, ".");
-						//subdomain=strtok(NULL, subdomain);
+						/* subdomain=strtok(NULL, subdomain); */
 						printf("%-16s\tA\t%s\n", subdomain, ns1_ip);
 						subdomain_cp[0]='\0';
 						subdomain[0]='\0';
 
 						subdomain_cp=strdup(ns2);
 						subdomain=strtok(subdomain_cp, ".");
-						//subdomain=strtok(NULL, subdomain);
+						/* subdomain=strtok(NULL, subdomain); */
 						printf("%-16s\tA\t%s\n", subdomain, ns2_ip);
 						subdomain_cp[0]='\0';
 						subdomain[0]='\0';
