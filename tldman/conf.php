@@ -1,8 +1,8 @@
 <?php
 /*
    MUD4TLD - Martin's User and Domain system for Top Level Domains.
-   (C) 2012 Martin COLEMAN. All rights reserved.
-   Licensed under Basic Software License v1.0 (see COPYING for details)
+   (C) 2012-2014 Martin COLEMAN. All rights reserved.
+   Licensed under the 2-clause license. (see COPYING for details)
    Made for the OpenNIC Project.
 
    v0.1
@@ -74,12 +74,16 @@
    v0.76 - 2012-08-30
    - Fixed a few WIP bugs and glitches.
    - Improved some more RM-API integration code.
+   
+   v0.77 - 2014-02-23
+   - Updated license.
+   - Fixed DB name link below.
 */
 session_start();
 $TLD="oz";
 $ws_title="dot OZ";
 $domain_expires=1; // to allow domains to expire
-$sw_version="0.75";
+$sw_version="0.77";
 $dev_link=0;
 $user="TEST01"; /* for registrars */
 $userkey="1234567890abcdef"; /* for registrars */
@@ -89,10 +93,11 @@ $mysql_server="localhost";
 $mysql_username="";
 $mysql_password="";
 $mysql_database="";
-$tld_db=$TLD."_users.sq3";
+$tld_db="../".$TLD."_tld.sq3";
 
 function sqlite_open_now($location,$mode)
 {
+    global $mysql_support;
     if($mysql_support==1)
     {
 		$handle=mysql_connect($mysql_server, $mysql_username, $mysql_password) or die("MySQL error");
@@ -105,6 +110,7 @@ function sqlite_open_now($location,$mode)
 
 function sqlite_query_now($dbhandle,$query)
 {
+    global $mysql_support;
 	if($mysql_support==1)
 	{
 		$result = mysql_query($query, $dbhandle);
