@@ -1,25 +1,8 @@
 /*
 	Initialise TLD
-	By Martin COLEMAN (C) 2012-2014. All rights reserved.
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions are met: 
-
-	1. Redistributions of source code must retain the above copyright notice, this
-	   list of conditions and the following disclaimer. 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-	   this list of conditions and the following disclaimer in the documentation
-	   and/or other materials provided with the distribution. 
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+	Written 2012 By Martin COLEMAN. Part of the Regnum aka MUD4TLD project.
+    This program, the TLD initialiser for BIND9 ala init_tld.c, is hereby
+    released into the public domain.
 
     TO BUILD:
 	Compile via $CC -o init_tld init_tld.c -lsqlite3
@@ -47,6 +30,9 @@
     - Removed redundant wording about old license.
     - Improved TLD templating.
     - Clarified compilation note above.
+
+    v0.5a - 2014-04.24
+    - Dedicated to the public domain.
 */
 #include <stdio.h>
 #include <time.h>
@@ -79,12 +65,12 @@ int main(int argc, char *argv[])
 	char ns2_ip[16];
 
 	#ifdef VERBOSE
-	fprintf(stderr, "TLD Initialiser v%s (C) 2012 Martin COLEMAN.\n", VERSION);
+	fprintf(stderr, "TLD Initialiser v%s by Martin Coleman. Public Domain.\n", VERSION);
 	#endif
 	if(argc<6)
 	{
 		#ifndef VERBOSE
-		fprintf(stderr, "TLD Initialiser v%s (C) 2012 Martin COLEMAN.\n", VERSION);
+		fprintf(stderr, "TLD Initialiser v%s by Martin Coleman. Public Domain..\n", VERSION);
 		#endif
 		fprintf(stderr, "Run: init_tld [TLD] [host] [email] [IP1] [IP2]\n");
 		return 0;

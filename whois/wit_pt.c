@@ -1,25 +1,8 @@
 /*
-	WHOIS server for opennicproject.org
-	By Martin Coleman (C) 2012-2013. All rights reserved.
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions are met: 
-
-	1. Redistributions of source code must retain the above copyright notice, this
-	   list of conditions and the following disclaimer. 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-	   this list of conditions and the following disclaimer in the documentation
-	   and/or other materials provided with the distribution. 
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+	WHOIS - Prototype server for opennicproject.org
+	Written 2012 By Martin Coleman.
+    Edited 2014.04.24 for public domain release.
+    This program, the WHOIS Prototype server aka wit_pc.c, is hereby released into the public domain.
 
 	Version 0.1
 	- Interfaces with sockets
@@ -27,17 +10,20 @@
 
 	Version 0.2
 	- Improved domain handling upon query
-	
+
 	Version 0.3
 	- Added nameservers information to WHOIS output.
 	- Added compiler define flag for testing.
-	
+
 	Version 0.4
 	- Complies a little better with http://www.ietf.org/rfc/rfc3912.txt
 	- Improved string and memory management.
-	
+
 	Version 0.5
 	- Reads records from plain text files only.
+
+    Version 0.5a - 2014.04.24
+    - Dedicated to the public domain.
 
 	ADMIN NOTES:
 	* Compile with -DWHOIS_TEST for it to use port 4343 instead of 43 to try it out.
@@ -150,7 +136,7 @@ int main (int argc, char *argv[])
 	char ret_svr[10]="127.0.0.1";
 
 	memset(return_buffer, 0, 2048);
-	printf("WIT/WHOIS server for The OpenNIC Project. Rev.5 (C) 2012 Martin COLEMAN.\n");
+	printf("WIT/WHOIS Prototype server for The OpenNIC Project. By Martin Coleman. Public Domain.\n");
 	/* create socket */
 	sd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sd<0)

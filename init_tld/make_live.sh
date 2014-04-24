@@ -1,6 +1,6 @@
 #!/bin/sh
 # OpenNIC MUD4TLD operations script.
-# By Martin COLEMAN (C) 2012-2014.
+# By Martin COLEMAN. Public Domain.
 # To install change the following to appropriate settings for your TLD and configuration,
 # especially the OpenNIC suite, and run. A cron job could be handy too.
 

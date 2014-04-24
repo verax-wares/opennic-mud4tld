@@ -1,8 +1,8 @@
 <?php
 /*
    MUD4TLD - Martin's User and Domain system for Top Level Domains.
-   (C) 2012-2014 Martin COLEMAN. All rights reserved.
-   Licensed under the 2-clause license. (see COPYING for details)
+   Written 2012-2014 By Martin COLEMAN.
+   This software is hereby dedicated to the public domain.
    Made for the OpenNIC Project.
 
    v0.1
@@ -78,6 +78,9 @@
    v0.77 - 2014-02-23
    - Updated license.
    - Fixed DB name link below.
+
+   v0.77a - 2014-04-24
+   - Dedicated to the public domain.
 */
 session_start();
 $TLD="oz";
