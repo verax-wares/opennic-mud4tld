@@ -1,4 +1,11 @@
 <?php
+/*
+   MUD4TLD - Martin's User and Domain system for Top Level Domains.
+   Written 2012-2014 By Martin COLEMAN.
+   This software is hereby dedicated to the public domain.
+   Made for the OpenNIC Project.
+   http://www.mchomenet.info/mud4tld.html
+*/
 /* Sample index page. Do what you want with it. Public domain. */
 include("conf.php");
 show_header();
@@ -11,7 +18,7 @@ show_header();
 <p>Registering a dot OZ is completely free<sup>*</sup>.</p>
 <p align="center">
 <form action="domain.php" method="post">
-Check domain <input type="text" name="domain">.OZ&nbsp;<input type="hidden" name="action" value="check"><input type="submit" value="Check!">
+Check domain <input type="text" name="domain">.OZ&nbsp;<input type="hidden" name="action" value="check_domain"><input type="submit" value="Check!">
 </form>
 </p>
 <p>&nbsp;</p>

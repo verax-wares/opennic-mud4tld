@@ -4,6 +4,7 @@
    Written 2012-2014 By Martin COLEMAN.
    This software is hereby dedicated to the public domain.
    Made for the OpenNIC Project.
+	http://www.mchomenet.info/mud4tld.html
 
    v0.1
    - Domain registration only. No processing.
@@ -81,42 +82,52 @@
 
    v0.77a - 2014-04-24
    - Dedicated to the public domain.
+   
+   v0.78 - 2014-0502 (Mario Rodriguez mrodrigu@gmail.com)
+   - Added RFC & ISO compliant in domain names (db structure, size validations & block reserved)
+   - Added MySQLi functionality
+   - Added rm_api support using curl instead of fopen
+   - Improved password hash to use SHA-256 instead of MD5
 */
 session_start();
 $TLD="oz";
+$server='opennic.'.$TLD;
 $ws_title="dot OZ";
 $domain_expires=1; // to allow domains to expire
-$sw_version="0.77";
+$sw_version="0.78";
 $dev_link=0;
-$user="TEST01"; /* for registrars */
-$userkey="1234567890abcdef"; /* for registrars */
-$tld_svr="http://opennic.".$TLD."/rm/rm_api.cgi";
-$mysql_support=0;
-$mysql_server="localhost";
-$mysql_username="";
-$mysql_password="";
-$mysql_database="";
+$user="demo"; /* for registrars */
+$userkey="0123456789012345"; /* for registrars */
+$tld_svr="http://opennic.".$TLD."/rm/rm_api.php";
+$mysql_support=1;
+$mysql_server='localhost';
+$mysql_username='nicuser';
+$mysql_password='dummy';
+$mysql_database='nicoz_opennic';
 $tld_db="../".$TLD."_tld.sq3";
+$specialNamesOpenNIC='[register|registrar|opennic|openic|www|web|http|https|ftp|ftps|ldap|mail|pop|pop3|smtp|nic|dot|com|org|net|gov|biz|info|name]';
+$specialNamesDNS='/^(dns|ns|nameserver)[0-9]*$/';
+$specialNamesRFC6761='[test|localhost|invalid|example|alt]';
+$specialNamesIANA='[aso|dnso|icann|internic|pso|afrinic|apnic|arin|gtld-servers|iab|iana|iana-servers|iesg|ietf|irtf|istf|lacnic|latnic|rfc-editor|ripe|root-servers]';
 
-function sqlite_open_now($location,$mode)
+function database_open_now($location=null,$mode=null)	//mode is not used
 {
-    global $mysql_support;
+    global $mysql_support, $mysql_server, $mysql_username, $mysql_password, $mysql_database;
     if($mysql_support==1)
     {
-		$handle=mysql_connect($mysql_server, $mysql_username, $mysql_password) or die("MySQL error");
-		mysql_select_db($mysql_database, $handle);
+		$handle=mysqli_connect($mysql_server, $mysql_username, $mysql_password, $mysql_database) or die("MySQL connect error");
 	} else {
 		$handle = new SQLite3($location);
 	}
 	return $handle;
 }
 
-function sqlite_query_now($dbhandle,$query)
+function database_query_now($dbhandle,$query)
 {
     global $mysql_support;
 	if($mysql_support==1)
 	{
-		$result = mysql_query($query, $dbhandle);
+		$result = mysqli_query($dbhandle, $query);
 	} else {
 		$array['dbhandle'] = $dbhandle;
 		$array['query'] = $query;
@@ -125,50 +136,75 @@ function sqlite_query_now($dbhandle,$query)
     return $result;
 }
 
-function sqlite_fetch_array_now(&$result) //,$type)
+function database_fetch_array_now(&$result) //,$type)
 {
-    #Get Columns
-    $i = 0;
-    while ($result->columnName($i))
-    {
-        $columns[ ] = $result->columnName($i);
-        $i++;
-    }
+    global $mysql_support;
+	if($mysql_support==1)
+	{
+		$resx=mysqli_fetch_array($result);
+	} else {
+		#Get Columns
+		$i = 0;
+		while ($result->columnName($i))
+		{
+			$columns[ ] = $result->columnName($i);
+			$i++;
+		}
 
-    $resx = $result->fetchArray(SQLITE3_ASSOC);
+		$resx = $result->fetchArray(SQLITE3_ASSOC);
+	}
     return $resx;
+}
+
+function database_close_now($dbhandle) {
+    global $mysql_support;
+	if($mysql_support==1)
+	{
+		if (!empty($dbhandle)) mysql_close($dbhandle);
+	}
 }
 
 function dbNumRows($qid)
 {
+  global $mysql_support;
   $numRows = 0;
-  while ($rowR = sqlite_fetch_array_now($qid))
-    $numRows++;
-  $qid->reset ();
+  if ($mysql_support) {
+		$numRows=mysqli_num_rows($qid);
+  } else {
+	  while ($rowR = database_fetch_array_now($qid))
+		$numRows++;
+	  $qid->reset ();
+  }
   return ($numRows);
 }
 
 function domain_taken($domain)
 {
-	global $TLD, $user, $userkey, $tld_svr;
-	if($domain=="register" || $domain=="opennic" || $domain=="example")
-	{
-		return 1;
-	}
+	global $TLD, $user, $userkey, $tld_svr, $specialNamesOpenNIC, $specialNamesRFC6761, $specialNamesIANA, $specialNamesDNS;
+	if ((preg_match($specialNamesOpenNIC, $domain))
+		|| (preg_match($specialNamesRFC6761, $domain))
+		|| (preg_match($specialNamesIANA, $domain))
+		|| (preg_match($specialNamesDNS, $domain))
+		) return true;	// user is trying to take an special name
 	$URL=$tld_svr."?cmd=check&user=".$user."&userkey=".$userkey."&tld=".$TLD."&domain=".$domain;
-	$handle=fopen($URL, "r");
-	$ret_data=fread($handle, 1024);
-	fclose($handle);
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $URL);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $ret_data = curl_exec($ch);
+    curl_close($ch);
+	if ($ret_data=='0') $ret_data=false;
+	if ($ret_data=='1') $ret_data=true;
 	return $ret_data;
 }
 
 function username_taken($username)
 {
 	global $tld_db;
-	$base=sqlite_open_now($tld_db, 0666);
+	$base=database_open_now($tld_db, 0666);
 	$query = "SELECT username FROM users WHERE username='".$username."' LIMIT 1";
 	// echo "<BR><B>DEBUG: [".$query."]</B><BR>";
-	$results = sqlite_query_now($base, $query);
+	$results = database_query_now($base, $query);
 	if(dbNumRows($results))
 	{
 		return 1;
@@ -186,7 +222,7 @@ function show_header()
 	{
 		echo "<p align=\"right\">Already have an account? <a href=\"user.php?action=frm_login\">Log in</a> or <a href=\"user.php?action=frm_register\">Register</a></p>\n";
 	} else {
-		echo "<p align=\"right\">Hello ".$_SESSION['username']."! [<a href=\"user.php?action=view_account\">My Account</a>]&nbsp;[<a href=\"user.php?action=logout\">Logout</a>].</p>\n";
+		echo "<p align=\"right\">Hello <b style=\"color: red;\">".$_SESSION['username']."</b>! [<a href=\"user.php?action=view_account\">My Account</a>]&nbsp;[<a href=\"user.php?action=logout\">Logout</a>].</p>\n";
 	}
 }
 
@@ -230,7 +266,7 @@ function confirm_user($username)
 {
 	global $tld_db;
 	$query = "UPDATE users SET verified=1 WHERE username='".$username."'";
-	$base=sqlite_open_now($tld_db, 0666);
-	sqlite_query_now($base, $query);
+	$base=database_open_now($tld_db, 0666);
+	database_query_now($base, $query);
 }
 ?>

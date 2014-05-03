@@ -1,16 +1,18 @@
 Installation of Regnum (formerly MUD4TLD)
+=========================================
 
 NOTE: You will need a C compiler installed. Any Unix/Linux distro should already have one, so you should be good to go. You will also need SQLite3 installed, as well as the library and header files. This is essential. I also highly recommend the "screen" program, or similar, to be installed if you want to run the WHOIS server.
 
 The Interface:
 
-[1] By whatever method applies to your Linux distribution or FreeBSD, install a web server with PHP support if you have not already done so. I recommend lighttpd or nginx with PHP5, but it is up to you.
+	[1] By whatever method applies to your Linux distribution or FreeBSD, install a web server with PHP support if you have not already done so.
+		I recommend lighttpd or nginx with PHP5, but it is up to you.
 
-[2] At the command line (change the uppercase TLD to your specified TLD below):
+	[2] At the command line (change the uppercase TLD to your specified TLD below):
+		sqlite3 TLD_tld.sq3 < OZ_tld.sql
 
-sqlite3 TLD_tld.sq3 < OZ_tld.sql
-
-[3] Copy TLD_tld.sq3 to where the PHP files are. Make sure all files are read-write capable and owner and group are whatever the web server software/daemon is running under. You might also want to ensure that group read-write is set on the DB, otherwise you will get errors.
+	[3] Copy TLD_tld.sq3 to where the PHP files are. Make sure all files are read-write capable and owner and group are whatever the web server software/daemon is running under.
+		You might also want to ensure that group read-write is set on the DB, otherwise you will get errors.
 
 [4] Access index.php with your browser and it should all be set. Change your TLD in conf.php to make it apply throughout your site. Adjust and change the rest as necessary.
 

@@ -1,23 +1,25 @@
 <?php
 /*
-    Written 2012 by Martin COLEMAN.
-    Dedicated to the public domain.
+   MUD4TLD - Martin's User and Domain system for Top Level Domains.
+   Written 2012-2014 By Martin COLEMAN.
+   This software is hereby dedicated to the public domain.
+   Made for the OpenNIC Project.
+   http://www.mchomenet.info/mud4tld.html
 */
 include("conf.php");
 
 function login($username, $password)
 {
 	global $tld_db;
-
 	$username=htmlspecialchars(stripslashes($username));
 	$password=htmlspecialchars(stripslashes($password));
-	$base=sqlite_open_now($tld_db, 0666);
-	$real_password=md5($password);
+	$base=database_open_now($tld_db, 0666);
+	$real_password=hash('sha256',$password);
 	$query = "SELECT userid, username, email, country FROM users WHERE username='".$username."' AND password='".$real_password."' AND verified=1 LIMIT 1";
-	$results = sqlite_query_now($base, $query);
+	$results = database_query_now($base, $query);
 	if(dbNumRows($results))
 	{
-		$arr=sqlite_fetch_array_now($results);
+		$arr=database_fetch_array_now($results);
 		$_SESSION['username'] = $username;
 		$_SESSION['userid'] = $arr['userid'];
 		// $_SESSION['email'] = $arr['email'];
@@ -26,7 +28,7 @@ function login($username, $password)
 	} else {
 		show_header();
 		echo "Incorrect username or password or account not verified. Please try again.";
-		die;
+		die();
 	}
 }
 
@@ -41,10 +43,70 @@ function form_login()
 <tr><td valign="top">Username:</td><td><input type="text" name="username"></td></tr>
 <tr><td valign="top">Password:</td><td><input type="password" name="password"></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" name="submit" value="Login"></td></tr>
+<tr><td colspan="2" align="center"><br><a href="user.php?action=frm_send_password">Send new password</a></td></tr>
 </table>
 <input type="hidden" name="action" value="login">
 </form>
 <?php
+}
+
+function frm_send_password()
+{
+	global $TLD;
+	show_header();
+?>
+<form action="user.php" method="post">
+<table width="400" align="center">
+<tr><td colspan="2" align="center"><h2><?php echo $TLD; ?> Send Password</h2></td></tr>
+<tr><td valign="top">Username:</td><td><input type="text" name="username"></td></tr>
+<tr><td valign="top">Email:</td><td><input type="text" name="email"></td></tr>
+<tr><td colspan="2" align="center"><input type="submit" name="action" value="Send_Password"></td></tr>
+</table>
+</form>
+<?php
+}
+
+function generatePassword($length = 8) {
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $count = mb_strlen($chars);
+    for ($i = 0, $result = ''; $i < $length; $i++) {
+        $index = rand(0, $count - 1);
+        $result .= mb_substr($chars, $index, 1);
+    }
+    return $result;
+}
+
+function send_password($user, $email) {
+	global $tld_db, $TLD, $server;
+
+	$user=htmlspecialchars(stripslashes($user));
+	$email=htmlspecialchars(stripslashes($email));
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		echo "Invalid email account. Please try again.";
+		die();
+	}
+	$base=database_open_now($tld_db, 0666);
+	$query = "SELECT userid FROM users WHERE username='".$user."' AND email='".$email."' AND verified=1 LIMIT 1";
+	$results = database_query_now($base, $query);
+	if(dbNumRows($results))
+	{
+		$newPass=generatePassword(8);
+		$real_password=hash('sha256',$newPass);
+		$query = "UPDATE users set password='".$real_password."' WHERE username='".$user."' AND email='".$email."'";
+		$results = database_query_now($base, $query);
+		if (!empty($results)) {
+			$to      = $email;
+			$subject = $server.' new password';
+			$message = 'You have requested a new password'."\r\n".'Your new password is: '.$newPass."\r\n\r\nThank you for use ".$server." services\r\n\r\n";
+			$headers = 'From: Opennic <no-reply@'.$server. ">\r\n";
+			mail($to, $subject, $message, $headers);
+			header("location: index.php");
+		}
+	} else {
+		show_header();
+		echo "Incorrect username or email or account not verified. Please try again.";
+		die();
+	}
 }
 
 function form_register()
@@ -87,14 +149,14 @@ function register($username, $name, $email, $password)
 	if(filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE)
 	{
 		echo "Not a valid email address";
-		die;
+		die();
 	}
 	$username=clean_up_input($username); /* just in case */
 	$username=strtolower($username);
 	if(username_taken($username))
 	{
 		echo "That username is already taken. Please try using another, different username.";
-		die;
+		die();
 	}
 	
 	/* let the user know */
@@ -108,12 +170,12 @@ function register($username, $name, $email, $password)
 	fclose($fh);
 
 	/* prepare account */
-	$base=sqlite_open_now($tld_db, 0666);
-	$real_password=md5($password);
+	$base=database_open_now($tld_db, 0666);
+	$real_password=hash('sha256',$password);
 	date_default_timezone_set('Australia/Brisbane');
 	$registered=strftime('%Y-%m-%d');
 	$query = "INSERT INTO users (username, password, name, email, registered, verified) VALUES('".$username."', '".$real_password."', '".$name."', '".$email."', '".$registered."', 0)";
-	$results = sqlite_query_now($base, $query);
+	$results = database_query_now($base, $query);
 	
 	/* construct email */
 	$msg_FROM = "FROM: hostmaster@opennic".$TLD."";
@@ -141,9 +203,9 @@ function dashboard()
 	// echo "<p align=\"right\"><a href=\"user.php?action=logout\">Logout</a></p>\n";
 	echo "<center><H2>Welcome to ".$username."'s Dashboard for .".$TLD."</H2>\n";
 	echo "<b>My .".$TLD." domains</b><BR><BR>";
-	$base=sqlite_open_now($tld_db, 0666);
+	$base=database_open_now($tld_db, 0666);
 	$query="SELECT domain, registered, expires FROM domains WHERE userid=".$userid."";
-	$results = sqlite_query_now($base, $query);
+	$results = database_query_now($base, $query);
 	if(dbNumRows($results))
 	{
 		echo "<table width=\"400\" align=\"center\" border=0 cellspacing=1 cellpadding=0>\n";
@@ -154,9 +216,9 @@ function dashboard()
 		}
 		echo "</tr>\n";
 
-		while($arr=sqlite_fetch_array_now($results))
+		while($arr=database_fetch_array_now($results))
 		{
-			echo "<tr><td><a href=\"domain.php?action=modify&domain=".$arr['domain']."\">".$arr['domain'].$TLD."</a></td><td>".$arr['registered']."</td>";
+			echo "<tr><td><a href=\"domain.php?action=modify&domain=".$arr['domain']."\">".$arr['domain'].'.'.$TLD."</a></td><td>".$arr['registered']."</td>";
 			if($domain_expires==1)
 			{
 				echo "<td>".$arr['expires']."</td>";
@@ -170,9 +232,9 @@ function dashboard()
 	echo "You can register a new ".$TLD." <a href=\"domain.php?action=frm_check_domain\">here</a>.";
 
 	$get_user_details="SELECT name, email, country FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
-	$base=sqlite_open_now($tld_db, 0666);
-	$get_user_details_results = sqlite_query_now($base, $get_user_details);
-	$get_user_details_arr=sqlite_fetch_array_now($get_user_details_results);
+	$base=database_open_now($tld_db, 0666);
+	$get_user_details_results = database_query_now($base, $get_user_details);
+	$get_user_details_arr=database_fetch_array_now($get_user_details_results);
 	$name=$get_user_details_arr['name'];
 	$email=$get_user_details_arr['email'];
 	$country=$get_user_details_arr['country'];
@@ -197,6 +259,7 @@ if(strlen($country)>0)
 <option value="AU">Australia</option>
 <option value="CA">Canada</option>
 <option value="DE">Germany</option>
+<option value="MX">Mexico</option>
 <option value="UK">United Kingdom</option>
 <option value="US">United States</option>
 </select><sup>**</sup></td></tr>
@@ -222,21 +285,21 @@ function update_account($country, $password)
 	show_header();
 	if(!isset($_SESSION['userid']))
 	{
-		echo "No valid account."; die;
+		echo "No valid account."; die();
 	}
 	$userid=$_SESSION['userid'];
 	$password=htmlspecialchars(stripslashes($password));
-	$real_password=md5($password);
+	$real_password=hash('sha256',$password);
 	$query = "UPDATE users SET country='".$country."', password='".$real_password."' WHERE userid='".$userid."'";
-	$base=sqlite_open_now($tld_db, 0666);
-	sqlite_query_now($base, $query);
+	$base=database_open_now($tld_db, 0666);
+	database_query_now($base, $query);
 	echo "Details updated.";
 }
 
 if(!isset($_REQUEST['action']))
 {
 	echo "Invalid command.";
-	die;
+	die();
 } else {
 	$action=$_REQUEST['action'];
 	switch($action)
@@ -247,6 +310,18 @@ if(!isset($_REQUEST['action']))
 		case "frm_register":
 			form_register();
 			break;
+		case "frm_send_password":
+			frm_send_password();
+			break;
+		case "Send_Password":
+			if(isset($_POST['email']) && isset($_POST['username'])) {
+				$user=$_POST['username'];
+				$email=$_POST['email'];
+				send_password($user, $email);
+			} else {
+				echo "Data error. Please retry.";
+				die();
+			}
 		case "login":
 			if(isset($_POST['username']) && isset($_POST['password']))
 			{
@@ -254,12 +329,12 @@ if(!isset($_REQUEST['action']))
 				$password=$_POST['password'];
 			} else {
 				echo "Data error. Please retry.";
-				die;
+				die();
 			}
-			if( (strlen($username)<5) && (strlen($password)<5) )
+			if( (strlen($username)<4) && (strlen($password)<6) )
 			{
-				echo "Invalid data. Please try again.";
-				die;
+				echo "Invalid data (username>=4 chars, password >=6 chars). Please try again.";
+				die();
 			}
 			login($username, $password);
 			break;
@@ -291,18 +366,18 @@ if(!isset($_REQUEST['action']))
 			if(!isset($_POST['password']))
 			{
 				echo "Current password not specified.";
-				die;
+				die();
 			}
 			$password=$_POST['password'];
 			$password=str_replace(" ", "", $password);
-			if(strlen($password)<5)
+			if(strlen($password)<6)
 			{
-				echo "Password should be at least 5 characters long.\n"; die;
+				echo "Password should be at least 6 characters long.\n"; die;
 			}
 			if(!isset($_POST['country']))
 			{
 				echo "Data error. Please retry.";
-				die;
+				die();
 			} else {
 				$country=$_POST['country'];
 			}
@@ -313,15 +388,15 @@ if(!isset($_REQUEST['action']))
 				if($password1 != $password2)
 				{
 					echo "Sorry, passwords do not match. Please try again.";
-					die;
+					die();
 				}
 				$password=$password1;
 			}
 			if(strlen($password1)>0)
 			{
-				if(strlen($password1)<5)
+				if(strlen($password1)<6)
 				{
-					echo "Remember, your new password needs to be at least 5 characters long.";
+					echo "Remember, your new password needs to be at least 6 characters long.";
 					die;
 				}
 				$password=$password1;
@@ -337,7 +412,7 @@ if(!isset($_REQUEST['action']))
 			break;
 		default:
 			echo "Invalid sub-command.";
-			die;
+			die();
 	}
 }
 ?>
