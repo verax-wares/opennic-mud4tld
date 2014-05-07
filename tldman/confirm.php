@@ -1,7 +1,10 @@
 <?php
 /*
-    Written 2012 by Martin COLEMAN.
-    Dedicated to the public domain.
+   MUD4TLD - Martin's User and Domain system for Top Level Domains.
+   Written 2012-2014 By Martin COLEMAN.
+   This software is hereby dedicated to the public domain.
+   Made for the OpenNIC Project.
+   http://www.mchomenet.info/mud4tld.html
 */
 include("conf.php");
 if(isset($_REQUEST['username']))
@@ -22,7 +25,7 @@ if(isset($_REQUEST['username']))
 		die;
 	}
 
-	$myFile = "/tmp/".$clean_username.".txt";
+	$myFile = "tmp/".$clean_username.".ukf";
 	$fh = fopen($myFile, 'r') or die("Can't open user key verification.");
 	$theData=fread($fh,filesize($myFile));
 	fclose($fh);

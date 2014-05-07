@@ -118,7 +118,8 @@ function form_register()
 <table width="400" align="center">
 <tr><td colspan="2" align="center"><h2><?php echo $TLD; ?> User Registration</h2><font size="-1">All entries must be at least 5 characters long.</font></td></tr>
 <tr><td>Name</td><td><input type="text" name="name" maxlength="50"></td></tr>
-<tr><td>Email</td><td><input type="text" name="email" maxlength="50"><sup>*</sup></td></tr>
+<tr><td>Email</td><td><input type="text" name="email1" maxlength="50"><sup>*</sup></td></tr>
+<tr><td>Email confirmation</td><td><input type="text" name="email2" maxlength="50"><sup>*</sup></td></tr>
 <tr><td>Username</td><td><input type="text" name="username" maxlength="20"></td></tr>
 <tr><td valign="top">Password</td><td><input type="password" name="password1"><sup>**</sup></td></tr>
 <tr><td valign="top">Password Confirm</td><td><input type="password" name="password2"></td></tr>
@@ -163,7 +164,7 @@ function register($username, $name, $email, $password)
 	echo "Creating new account for ".$name." via ".$username."<BR>\n";
 
 	/* generate user verification key */
-	$userkeyfile="/tmp/".$username.".txt";
+	$userkeyfile="tmp/".$username.".ukf";	// some environments does not allow execuion outside its boundaries even /tmp
 	$fh=fopen($userkeyfile, 'w') or die("Can't create user key verification file. Please report this to the admin.");
 	$userkey=unique_id(16);
 	fwrite($fh, $userkey);
@@ -174,12 +175,13 @@ function register($username, $name, $email, $password)
 	$real_password=hash('sha256',$password);
 	date_default_timezone_set('Australia/Brisbane');
 	$registered=strftime('%Y-%m-%d');
-	$query = "INSERT INTO users (username, password, name, email, registered, verified) VALUES('".$username."', '".$real_password."', '".$name."', '".$email."', '".$registered."', 0)";
+	$query = "INSERT INTO users (username, password, name, email, registered, verified)
+			VALUES('".$username."', '".$real_password."', '".$name."', '".$email."', '".$registered."', 0)";
 	$results = database_query_now($base, $query);
 	
 	/* construct email */
-	$msg_FROM = "FROM: hostmaster@opennic".$TLD."";
-	$msg_subject = "OpenNIC".$TLD." User Registration.";
+	$msg_FROM = "FROM: hostmaster@opennic.".$TLD;
+	$msg_subject = "OpenNIC ".$TLD." User Registration.";
 	$msg = "Welcome ".$name." to OpenNIC.".$TLD."!\n\n";
 	$msg .= "Your details are:\n";
 	$msg .= "Username: ".$username."\n";
@@ -339,26 +341,32 @@ if(!isset($_REQUEST['action']))
 			login($username, $password);
 			break;
 		case "register":
-			if(isset($_POST['username']) && isset($_POST['password1']) && isset($_POST['password2']) && isset($_POST['email']) && isset($_POST['name']))
+			if(isset($_POST['username']) && isset($_POST['password1']) && isset($_POST['password2']) && isset($_POST['email1'])  && isset($_POST['email2']) && isset($_POST['name']))
 			{
 				$username=$_POST['username'];
 				$password1=$_POST['password1'];
 				$password2=$_POST['password2'];
-				$email=$_POST['email'];
+				$email=$_POST['email1'];
+				$email2=$_POST['email2'];
 				$name=$_POST['name'];
 			} else {
 				echo "Data error. Please retry.";
-				die;
+				die();
 			}
 			if($password1 != $password2)
 			{
 				echo "Sorry, passwords do not match. Please try again.";
-				die;
+				die();
+			}
+			if($email != $email2)
+			{
+				echo "Sorry, email confirmation do not match. Please try again.";
+				die();
 			}
 			if( (strlen($name)<5) && (strlen($username)<5) && (strlen($password1)<5) && (strlen($email)<5) )
 			{
 				echo "Invalid data. Please try again.";
-				die;
+				die();
 			}
 			register($username, $name, $email, $password1);
 			break;
@@ -372,7 +380,7 @@ if(!isset($_REQUEST['action']))
 			$password=str_replace(" ", "", $password);
 			if(strlen($password)<6)
 			{
-				echo "Password should be at least 6 characters long.\n"; die;
+				echo "Password should be at least 6 characters long.\n"; die();
 			}
 			if(!isset($_POST['country']))
 			{
@@ -397,7 +405,7 @@ if(!isset($_REQUEST['action']))
 				if(strlen($password1)<6)
 				{
 					echo "Remember, your new password needs to be at least 6 characters long.";
-					die;
+					die();
 				}
 				$password=$password1;
 			}

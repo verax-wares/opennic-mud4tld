@@ -88,6 +88,7 @@
    - Added MySQLi functionality
    - Added rm_api support using curl instead of fopen
    - Improved password hash to use SHA-256 instead of MD5
+   - Request and send new users passwords
 */
 session_start();
 $TLD="oz";
@@ -265,8 +266,8 @@ function unique_id($l = 8)
 function confirm_user($username)
 {
 	global $tld_db;
-	$query = "UPDATE users SET verified=1 WHERE username='".$username."'";
 	$base=database_open_now($tld_db, 0666);
+	$query = "UPDATE users SET verified=1 WHERE username='".$username."'";
 	database_query_now($base, $query);
 }
 ?>
