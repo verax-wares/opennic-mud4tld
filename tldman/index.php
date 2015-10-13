@@ -10,20 +10,19 @@
 include("conf.php");
 show_header();
 ?>
-<center><h1>.OZ</h1></center>
+<center><h1>.CHAN</h1></center>
 
 <table width="600" align="center">
 <tr><td align="center">
-<p>dot OZ is the TLD (Top Level Domain) custom made for Australians, but still available to everyone. dot OZ is targeted to those who may want a domain with the cultural association with Australia, but without the requirements of .com.au, net.au or org.au registrations.</p>
-<p>Registering a dot OZ is completely free<sup>*</sup>.</p>
+<p>dot CHAN is the TLD (Top Level Domain) custom made for shitposters, but still available to everyone. dot CHAN is targeted to those who may want a domain with the cultural association with Australia, but without the requirements of .com.au, net.au or org.au registrations.</p>
+<p>Registering a dot CHAN is completely free<sup>*</sup>.</p>
 <p align="center">
 <form action="domain.php" method="post">
-Check domain <input type="text" name="domain">.OZ&nbsp;<input type="hidden" name="action" value="check_domain"><input type="submit" value="Check!">
+Check domain <input type="text" name="domain">.CHAN&nbsp;<input type="hidden" name="action" value="check_domain"><input type="submit" value="Check!">
 </form>
 </p>
 <p>&nbsp;</p>
-<p>Is someone abusing a dot OZ? Report spam or illegal material coming from a dot OZ via the <a href="abuse.php">abuse</a> form.</p>
-<p><font size="-1"><sup>*</sup> Provided the registrant adheres to the <a href="charter.htm">charter</a>.</font></p>
+<p>Is someone abusing a dot CHAN? Report spam or illegal material coming from a dot CHAN by contacting our <a href="mailto:abuse@opennic.chan">Abuse Hotline</a></p>
 </td></tr></table>
 
 <?php

@@ -91,9 +91,9 @@
    - Request and send new users passwords
 */
 session_start();
-$TLD="oz";
+$TLD="chan";
 $server='opennic.'.$TLD;
-$ws_title="dot OZ";
+$ws_title="dot CHAN";
 $domain_expires=1; // to allow domains to expire
 $sw_version="0.78";
 $dev_link=0;

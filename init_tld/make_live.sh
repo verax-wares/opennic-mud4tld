@@ -10,9 +10,9 @@ ZONE_DIR=/var/cache/bind/opennic/master/
 OPENNIC_SUITE=/home/martin/opennic_tmp/
 PRIMARY_IP=103.4.16.80
 SECONDARY_IP=103.4.16.80
-MY_EMAIL=hostmaster.opennic.oz
+MY_EMAIL=hostmaster.opennic.chan
 MY_HOST=ns10.opennic.glue
-MY_TLD=oz
+MY_TLD=chan
 BIND_USR=bind
 BIND_GRP=bind
 # end of modifications
