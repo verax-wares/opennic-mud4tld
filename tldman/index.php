@@ -22,7 +22,7 @@ Check domain <input type="text" name="domain">.CHAN&nbsp;<input type="hidden" na
 </form>
 </p>
 <p>&nbsp;</p>
-<p>Is someone abusing a dot CHAN? Report spam or illegal material coming from a dot CHAN via <a href="mailto:abuse@opennic.chan">email</a></p>.
+<p>Is someone abusing a dot CHAN? Report spam or illegal material coming from a dot CHAN via <a href="mailto:abuse@opennic.chan">email</a>.</p>
 </td></tr></table>
 
 <?php
