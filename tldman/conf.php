@@ -57,12 +57,24 @@ function database_query_now($dbhandle,$query)
     return $result;
 }
 
-function database_new_handle()
+function database_pdo_query($query)
 {
 	global $mysql_server, $mysql_database, $mysql_username, $mysql_password;
 	try {
 		$dbh = new PDO("mysql:host=$mysql_server;dbname=$mysql_database", "$mysql_username", "$mysql_password");
-		return $dbh;
+		$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	#	$sth = $dbh->quote($query);
+		$sth = $query;
+echo "<b>$sth</b><br>";
+		if ( preg_match('/^SELECT/', $query) )
+		{
+			$ret_data = $dbh->query($sth)->fetch(PDO::FETCH_ASSOC);
+		} else {
+			$ret_data = $dbh->query($sth);
+		}
+		return $ret_data;
+		$sth = null;
+		$dbh = null; #make sure to close handles
 	} catch (PDOException $e) {
 		print "<b>Error!: " . $e->getMessage() . "</b><br/>";
 		die();

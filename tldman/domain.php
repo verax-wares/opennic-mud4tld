@@ -163,15 +163,18 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	}
 	echo "<b>Debug1</b>";
 	$nowp1 = (date("Y") + 1).date("-m-d");
-$now = date("Y-m-d");
+	$now = date("Y-m-d");
+	$now2 = $now;
 	
-	$dbh = database_new_handle();
-	$sth = $dbh->prepare("INSERT INTO ? VALUES ('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?')");
-	$ret_data = $sth->execute($domain_table, $domain, $username, " ", $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid);
-	echo "($domain_table, $domain, $username, ' ', $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid)";
+#	$dbh = database_new_handle();
+	$ret_data = database_pdo_query("INSERT INTO $domain_table () VALUES ('$domain', '$username', 'contact@example.chan', 'ns1.example.chan', 'ns2.example.chan', '192.168.1.1', '192.168.1.2', '$now', '$nowp1', '$now', '$userid')");
+	#echo "<b>$sth</b><br>";
+	#$ret_data = $dbh->query($sth);
+	#$ret_data = $sth->execute(array($domain_table, $domain, $username, $now, $nowp1, $now2, $userid));
+	#echo "INSERT INTO $domain_table VALUES ($domain, $username, 'contact@example.chan', 'ns1.example.chan', 'ns2.example.chan', '192.168.1.1', '192.168.1.2', $now, $nowp1, $now2, $userid)";
 
-	$sth = null;
-	$dbh = null; #make sure to close handles
+	#$sth = null;
+	#$dbh = null; #make sure to close handles
 
 	if ($ret_data == 1)
 	{
@@ -184,31 +187,25 @@ $now = date("Y-m-d");
 
 function delete_domain($domain)
 {
-	global $tld_svr, $user, $userkey, $TLD;
+	global $domain_table;
+	$userid=$_SESSION['userid'];
+	$results = database_pdo_query("SELECT * FROM $domain_table WHERE domain='$domain' LIMIT 1");
+	print_r($results);
+	$real_userid = $results['userid'];
+	echo "<b>userid = $real_userid</b>";
+	if($userid != $real_userid)
+	{
+		echo "<font color=\"#ff0000\"><b>Error: You do not have permission to modify this domain.</b></font>";
+		die();
+	}
 
 	show_header();
-	$userid=$_SESSION['userid'];
-	$URL=$tld_svr."?cmd=delete&user=".$user."&userkey=".$userkey."&tld=".$TLD."&domain=".$domain;
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $ret_data = curl_exec($ch);
-    curl_close($ch);
-	switch($ret_data)
+	$ret_data = database_pdo_query("DELETE FROM $domain_table WHERE `domain`='$domain' AND `userid`='$userid'");
+	if ($ret_data)
 	{
-        case "0":
-            echo "<center><b>Error, domain not deleted</b>. Possibly an administrative glitch.</center>";
-            break;
-        case "1":
-            echo "<center><b>Domain deleted</b>. Changes may take up to 24-72 hours to take effect.</center>";
-            break;
-        case "255":
-            echo "Server error occured.";
-            break;
-        default:
-            echo "An unknown problem has occured. Please try again later.";
-            break;
+    	echo "<center><b>Domain deleted</b>. Changes may take up to 24-72 hours to take effect.</center>";
+	} else {
+    	echo "<center><b>Error, domain not deleted</b>. Possibly an administrative glitch.</center>";
 	}
 }
 
