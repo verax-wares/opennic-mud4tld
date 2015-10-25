@@ -59,10 +59,10 @@ function database_query_now($dbhandle,$query)
 
 function database_new_handle()
 {
+	global $mysql_server, $mysql_database, $mysql_username, $mysql_password;
 	try {
 		$dbh = new PDO("mysql:host=$mysql_server;dbname=$mysql_database", "$mysql_username", "$mysql_password");
 		return $dbh;
-		$dbh = null;
 	} catch (PDOException $e) {
 		print "<b>Error!: " . $e->getMessage() . "</b><br/>";
 		die();

@@ -180,6 +180,7 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	$dbh = database_new_handle();
 	$sth = $dbh->prepare("INSERT INTO $domain_table VALUES ('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?')");
 	$ret_data = $sth->execute($domain, $name, " ", $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid);
+	echo "($domain, $name, ' ', $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid)";
 
 	$sth = null;
 	$dbh = null; #make sure to close handles
