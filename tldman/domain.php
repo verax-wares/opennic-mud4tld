@@ -109,7 +109,7 @@ echo "<input type=\"hidden\" name=\"domain\" value=\"".$domain."\">\n";
 
 function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 {
-	global $TLD, $tld_svr, $user, $userkey;
+	global $TLD, $tld_svr, $user, $userkey, $domain_table;
 
 	$userid=$_SESSION['userid'];
 	$username=$_SESSION['username'];
@@ -161,26 +161,14 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 		echo "Sorry, this domain has already been submitted for processing. If you believe this to be in error or you would like to dispute the previous registration, please contact us using the domain <a href=\"abuse.php\">abuse</a> page</a>. Thank you.";
 		die();
 	}
-	#if( (strlen($ns1_ip)>7) && (strlen($ns2_ip)>7)) #We need a lot more input validation everywhere
-	#{
-		#$URL=$tld_svr."?cmd=register&user=".$user."&userkey=".$userkey."&tld=".$tld."&domain=".$domain."&userid=".$userid."&ns1=".$ns1."&ns2=".$ns2."&ns1_ip=".$ns1_ip."&ns2_ip=".$ns2_ip;
-	#} else {
-	#	$URL=$tld_svr."?cmd=register&user=".$user."&userkey=".$userkey."&tld=".$tld."&domain=".$domain."&userid=".$userid."&ns1=".$ns1."&ns2=".$ns2;
-	#}
-	#$ch = curl_init();
-	#curl_setopt($ch, CURLOPT_URL, $URL);
-    #curl_setopt($ch, CURLOPT_HEADER, 0);
-    #curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    #$ret_data = curl_exec($ch);
-    #curl_close($ch);
 	echo "<b>Debug1</b>";
 	$nowp1 = (date("Y") + 1).date("-m-d");
-	$now = date("Y-m-d");
+$now = date("Y-m-d");
 	
 	$dbh = database_new_handle();
-	$sth = $dbh->prepare("INSERT INTO $domain_table VALUES ('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?')");
-	$ret_data = $sth->execute($domain, $name, " ", $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid);
-	echo "($domain, $name, ' ', $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid)";
+	$sth = $dbh->prepare("INSERT INTO ? VALUES ('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?')");
+	$ret_data = $sth->execute($domain_table, $domain, $username, " ", $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid);
+	echo "($domain_table, $domain, $username, ' ', $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid)";
 
 	$sth = null;
 	$dbh = null; #make sure to close handles
