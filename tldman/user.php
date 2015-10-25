@@ -15,7 +15,7 @@ function login($username, $password)
 	$password=htmlspecialchars(stripslashes($password));
 	$base=database_open_now($tld_db, 0666);
 	$real_password=hash('sha256',$password);
-	$query = "SELECT userid, username, email, country FROM users WHERE username='".$username."' AND password='".$real_password."' AND verified=1 LIMIT 1";
+	$query = "SELECT userid, username, email FROM users WHERE username='".$username."' AND password='".$real_password."' AND verified=1 LIMIT 1";
 	$results = database_query_now($base, $query);
 	if(dbNumRows($results))
 	{
@@ -173,7 +173,7 @@ function register($username, $name, $email, $password)
 	/* prepare account */
 	$base=database_open_now($tld_db, 0666);
 	$real_password=hash('sha256',$password);
-	date_default_timezone_set('Australia/Brisbane');
+	date_default_timezone_set('Etc/UTC');
 	$registered=strftime('%Y-%m-%d');
 	$query = "INSERT INTO users (username, password, name, email, registered, verified)
 			VALUES('".$username."', '".$real_password."', '".$name."', '".$email."', '".$registered."', 0)";

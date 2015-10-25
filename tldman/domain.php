@@ -161,31 +161,36 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 		echo "Sorry, this domain has already been submitted for processing. If you believe this to be in error or you would like to dispute the previous registration, please contact us using the domain <a href=\"abuse.php\">abuse</a> page</a>. Thank you.";
 		die();
 	}
-	if( (strlen($ns1_ip)>7) && (strlen($ns2_ip)>7))
-	{
-		$URL=$tld_svr."?cmd=register&user=".$user."&userkey=".$userkey."&tld=".$tld."&domain=".$domain."&userid=".$userid."&ns1=".$ns1."&ns2=".$ns2."&ns1_ip=".$ns1_ip."&ns2_ip=".$ns2_ip;
-	} else {
-		$URL=$tld_svr."?cmd=register&user=".$user."&userkey=".$userkey."&tld=".$tld."&domain=".$domain."&userid=".$userid."&ns1=".$ns1."&ns2=".$ns2;
-	}
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $URL);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $ret_data = curl_exec($ch);
-    curl_close($ch);
+	#if( (strlen($ns1_ip)>7) && (strlen($ns2_ip)>7)) #We need a lot more input validation everywhere
+	#{
+		#$URL=$tld_svr."?cmd=register&user=".$user."&userkey=".$userkey."&tld=".$tld."&domain=".$domain."&userid=".$userid."&ns1=".$ns1."&ns2=".$ns2."&ns1_ip=".$ns1_ip."&ns2_ip=".$ns2_ip;
+	#} else {
+	#	$URL=$tld_svr."?cmd=register&user=".$user."&userkey=".$userkey."&tld=".$tld."&domain=".$domain."&userid=".$userid."&ns1=".$ns1."&ns2=".$ns2;
+	#}
+	#$ch = curl_init();
+	#curl_setopt($ch, CURLOPT_URL, $URL);
+    #curl_setopt($ch, CURLOPT_HEADER, 0);
+    #curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    #$ret_data = curl_exec($ch);
+    #curl_close($ch);
+	echo "<b>Debug1</b>";
+	$nowp1 = (date("Y") + 1).date("-m-d");
+	$now = date("Y-m-d");
+	
+	$dbh = database_new_handle();
+	$sth = $dbh->prepare("INSERT INTO $domain_table VALUES ('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?')");
+	$ret_data = $sth->execute($domain, $name, " ", $ns1, $ns2, $ns1_ip, $ns2_ip, $now, $nowp1, $now, $userid);
 
-	switch($ret_data)
+	$sth = null;
+	$dbh = null; #make sure to close handles
+
+	if ($ret_data == 1)
 	{
-		case "0":
-			echo "<font color=\"#800000\"><b>Error</b></font><BR>An error occured during registration. Please try again.";
-			break;
-		case "1":
 			echo "<font color=\"#008000\"><b>Complete</b></font><BR>Congratulations! Your new domain has been registered and should be live within the next 24 hours.";
-			break;
-		case "255":
-			echo "<font color=\"#800000\"><b>Server Error</b></font><BR>A server error has occured. Please contact this site's administrators.";
-			break;
+	} else {
+			echo "<font color=\"#800000\"><b>Error</b></font><BR>An error occured during registration. Please try again.";
 	}
+	echo "<b>Debug2</b>";
 }
 
 function delete_domain($domain)
