@@ -9,7 +9,11 @@ ns2_ip VARCHAR(39),
 registered DATE NOT NULL,
 expires DATE,
 updated DATE NOT NULL,
-userid INT NOT NULL);
+userid INT NOT NULL,
+isns INT(1) DEFAULT 0,
+txt VARCHAR(255),
+dskey VARCHAR(255),
+pgpkey VARCHAR(8192));
 
 create table users (
 userid INTEGER PRIMARY KEY,
