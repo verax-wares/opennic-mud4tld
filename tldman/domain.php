@@ -56,7 +56,7 @@ function check_domain($domain)
 			echo "<font color=\"#ff0000\"><b>Taken</b></font><BR><BR>Sorry, that name is already taken.";
 		} else {
 			echo "<font color=\"#008000\"><b>Available!</b></font><BR><BR>Congratulations! <b>".$name.".".$TLD."</b> is available.\n";
-			echo "Would you like to register it now?\n<form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n<input type=\"hidden\" name=\"domain\" value=\"".$name."\">\n<input type=\"hidden\" name=\"action\" value=\"frm_register_domain\">\n<input type=\"submit\" name=\"submit\" value=\"Yes!\">\n</form>\n";
+			echo "Would you like to register it now?\n<form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n<input type=\"hidden\" name=\"domain\" value=\"".$name."\">\n<input type=\"hidden\" name=\"action\" value=\"register_domain\">\n<input type=\"submit\" name=\"submit\" value=\"Yes!\">\n</form>\n";
 		}
 		echo "You can use the form below to search for another domain if you like.";
 	}
@@ -107,8 +107,10 @@ echo "<input type=\"hidden\" name=\"domain\" value=\"".$domain."\">\n";
 <?php
 }
 
-function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
+#function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
+function register_domain($domain)
 {
+	show_header();
 	global $TLD, $tld_svr, $user, $userkey, $domain_table;
 
 	$userid=$_SESSION['userid'];
@@ -121,41 +123,41 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 	{
 		echo "Error validating user name.\n"; die();
 	}
-	$ns1=$_POST['ns1'];
-	$ns2=$_POST['ns2'];
-	if( ($ns1=="enter here") || ($ns2=="enter here") )
-	{
-		echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die();
-	}
-	if( (empty($ns1)) || (empty($ns2)))
-	{
-		echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die();
-	}
-	if( (isset($_POST['ns1_ip'])) && (strlen($_POST['ns1_ip'])>0) )
-	{
-		$ns1_ip=$_POST['ns1_ip'];
-		if(validateIPAddress($ns1_ip)==0)
-		{
-			echo "<font color='#ff0000'><b>Error</b></font> NS1 Custom Nameserver must be a valid IPv4 address"; die();
-		}
-	}
-	if( (isset($_POST['ns2_ip'])) && (strlen($_POST['ns2_ip'])>0) )
-	{
-		$ns2_ip=$_POST['ns2_ip'];
-		if(validateIPAddress($ns2_ip)==0)
-		{
-			echo "<font color='#ff0000'><b>Error</b></font> NS2 Custom Nameserver must be a valid IPv4 address"; die();
-		}
-	}
+	#$ns1=$_POST['ns1'];
+	#$ns2=$_POST['ns2'];
+	#if( ($ns1=="enter here") || ($ns2=="enter here") )
+	#{
+	#	echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die();
+	#}
+	#if( (empty($ns1)) || (empty($ns2)))
+	#{
+	#	echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die();
+	#}
+	#if( (isset($_POST['ns1_ip'])) && (strlen($_POST['ns1_ip'])>0) )
+	#{
+	#	$ns1_ip=$_POST['ns1_ip'];
+	#	if(validateIPAddress($ns1_ip)==0)
+	#	{
+	#		echo "<font color='#ff0000'><b>Error</b></font> NS1 Custom Nameserver must be a valid IPv4 address"; die();
+	#	}
+	#}
+	#if( (isset($_POST['ns2_ip'])) && (strlen($_POST['ns2_ip'])>0) )
+	#{
+	#	$ns2_ip=$_POST['ns2_ip'];
+	#	if(validateIPAddress($ns2_ip)==0)
+	#	{
+	#		echo "<font color='#ff0000'><b>Error</b></font> NS2 Custom Nameserver must be a valid IPv4 address"; die();
+	#	}
+	#}#
 	if( (strlen($domain)<2) && (strlen($domain)>50) && (strlen($ns1)<5) && (strlen($ns2)<5) )
 	{
 		echo "<font color='#ff0000'><b>Error</b></font> Domain details must adhere to standard lengths.\n"; die();
 	}
-	if($ns1 == $ns2)
-	{
-		echo "<font color='#FF8C00'><b>Please Note:</b></font> We highly recommend that you use two different nameserver values instead of the same one.<BR>\n";
-	}
-	echo "Processing ".$domain.'.'.$TLD."...";
+	#if($ns1 == $ns2)
+	#{
+#		echo "<font color='#FF8C00'><b>Please Note:</b></font> We highly recommend that you use two different nameserver values instead of the same one.<BR>\n";
+	#}
+	#echo "Processing ".$domain.'.'.$TLD."...";
 	if(domain_taken($domain))
 	{
 		echo "Sorry, this domain has already been submitted for processing. If you believe this to be in error or you would like to dispute the previous registration, please contact us using the domain <a href=\"abuse.php\">abuse</a> page</a>. Thank you.";
@@ -178,7 +180,7 @@ function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 
 	if ($ret_data == 1)
 	{
-			echo "<font color=\"#008000\"><b>Complete</b></font><BR>Congratulations! Your new domain has been registered and should be live within the next 24 hours.";
+		echo "<font color=\"#008000\"><b>Complete</b></font><BR>Congratulations! Your new domain has been registered.  Please configure it now:\n<a href=\"domain.php?action=modify&domain=".$domain."\">Configure</a>";
 	} else {
 			echo "<font color=\"#800000\"><b>Error</b></font><BR>An error occured during registration. Please try again.";
 	}
@@ -352,7 +354,8 @@ if(isset($_REQUEST['action']))
 				$ns2_ip="NULL";
 			}
 			$ns2_ip="NULL";
-			register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip);
+			#register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip);
+			register_domain($domain);
 			break;
 		case "confirm_delete_domain":
 			if(!isset($_POST['domain']))
