@@ -10,20 +10,20 @@ include("conf.php");
 
 function login($username, $password)
 {
-	global $tld_db;
+	global $user_table;
+	if(!validateUsername($username))
+	{
+		echo "Usernames must be alphanumeric characters only<br>";
+		die();
+	}
 	$username=htmlspecialchars(stripslashes($username));
 	$password=htmlspecialchars(stripslashes($password));
-	$base=database_open_now($tld_db, 0666);
 	$real_password=hash('sha256',$password);
-	$query = "SELECT userid, username, email FROM users WHERE username='".$username."' AND password='".$real_password."' AND verified=1 LIMIT 1";
-	$results = database_query_now($base, $query);
-	if(dbNumRows($results))
+	$results = database_pdo_query("SELECT userid, username FROM $user_table WHERE username='$username' AND password='$real_password' AND verified=1 LIMIT 1");
+	if($results['username'] == $username)
 	{
-		$arr=database_fetch_array_now($results);
 		$_SESSION['username'] = $username;
-		$_SESSION['userid'] = $arr['userid'];
-		// $_SESSION['email'] = $arr['email'];
-		// $_SESSION['country'] = $arr['country'];
+		$_SESSION['userid'] = $results['userid'];
 		header("location: index.php");
 	} else {
 		show_header();
@@ -83,6 +83,11 @@ function send_password($user, $email) {
 	$email=htmlspecialchars(stripslashes($email));
 	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 		echo "Invalid email account. Please try again.";
+		die();
+	}
+	if(!validateUsername($username))
+	{
+		echo "Usernames must be alphanumeric characters only<br>";
 		die();
 	}
 	$base=database_open_now($tld_db, 0666);
@@ -149,6 +154,11 @@ function register($username, $email, $password)
 	if(filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE)
 	{
 		echo "Not a valid email address";
+		die();
+	}
+	if(!validateUsername($username))
+	{
+		echo "Usernames must be alphanumeric characters only<br>";
 		die();
 	}
 	$username=clean_up_input($username); /* just in case */
@@ -274,6 +284,11 @@ function update_account($password, $pgpkey)
 	{
 		echo "No valid account."; die();
 	}
+	if(!validatePGP($pgpkey))
+	{
+		echo "Invalid PGP key<br>";
+		die();
+	}
 	$userid=$_SESSION['userid'];
 	if ( strlen($password) > 0 )
 	{
@@ -281,20 +296,23 @@ function update_account($password, $pgpkey)
 		$real_password=hash('sha256',$password);
 		$pass_ret = database_pdo_query("UPDATE $user_table SET password='$real_password' WHERE userid='$userid'");
 		$changed=1;
-		echo "debug pass updated<br>";
 	}
 	if ( strlen($pgpkey) > 0 )
 	{
-		echo "debug pgpkey gt 0 <br>";
 		if(!validatePGP($pgpkey))
 		{
 			echo "Invalid PGP key<br>";
 			die();
 		}
-		echo "pgp key passes validation<br>";
 		$pgp_ret = database_pdo_query("UPDATE $user_table SET pgpkey='$pgpkey' WHERE userid='$userid'");
+		$changed = 1;
 	}
-	echo "Details updated.";
+	if ( $changed == 1 )
+	{
+		echo "Details updated.";
+	} else {
+		echo "Nothing was changed.";
+	}
 }
 
 if(!isset($_REQUEST['action']))

@@ -65,7 +65,7 @@ function database_pdo_query($query)
 		$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	#	$sth = $dbh->quote($query);
 		$sth = $query;
-echo "<b>$sth</b><br>";
+#echo "<b>$sth</b><br>";
 		if ( preg_match('/^SELECT/', $query) )
 		{
 			$ret_data = $dbh->query($sth)->fetch(PDO::FETCH_ASSOC);
@@ -75,6 +75,18 @@ echo "<b>$sth</b><br>";
 		return $ret_data;
 		$sth = null;
 		$dbh = null; #make sure to close handles
+	} catch (PDOException $e) {
+		print "<b>Error!: " . $e->getMessage() . "</b><br/>";
+		die();
+	}
+}
+
+function database_pdo_open()
+{
+	global $mysql_server, $mysql_database, $mysql_username, $mysql_password;
+	try {
+		$dbh = new PDO("mysql:host=$mysql_server;dbname=$mysql_database", "$mysql_username", "$mysql_password");
+		return $dbh;
 	} catch (PDOException $e) {
 		print "<b>Error!: " . $e->getMessage() . "</b><br/>";
 		die();
@@ -132,25 +144,13 @@ function domain_taken($domain)
 		|| (preg_match($specialNamesDNS, $domain))
 		) return true;	// user is trying to take an special name
 
-	$query = "SELECT * FROM domains WHERE domain='".$domain."' LIMIT 1";
-	$results = database_query_now($base, $query);
-	if(dbNumRows($results))
+	$results = database_pdo_query("SELECT * FROM domains WHERE domain='$domain' LIMIT 1");
+	if($results['domain'] == $domain)
 	{
 		return 1;
 	} else {
 		return 0;
 	}
-
-	#$URL=$tld_svr."?cmd=check&user=".$user."&userkey=".$userkey."&tld=".$TLD."&domain=".$domain;
-	#$ch = curl_init();
-	#curl_setopt($ch, CURLOPT_URL, $URL);
-    #curl_setopt($ch, CURLOPT_HEADER, 0);
-    #curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    #$ret_data = curl_exec($ch);
-    #curl_close($ch);
-	#if ($ret_data=='0') $ret_data=false;
-	#if ($ret_data=='1') $ret_data=true;
-	#return $ret_data;
 }
 
 function username_taken($username)
@@ -239,20 +239,26 @@ function validateFQDN($hostname, $domain)
 
 function validateDSKEY($dskey)
 {
-	if(preg_match("/^[0-9a-zA-Z\.\-\s]+?$/", $dskey)) { return 1; }
+	if(preg_match("/^[0-9a-zA-Z\.\-\s]*?$/", $dskey)) { return 1; }
 	return 0;
 }
 
 function validateTXT($txt)
 {
-	if(preg_match("/^[0-9a-zA-Z\.\-\s,_]+?$/", $txt)) { return 1; }
+	if(preg_match("/^[0-9a-zA-Z\.\-\s,_]*?$/", $txt)) { return 1; }
 	return 0;
 }
 
 function validatePGP($pgpkey)
 {
-	echo "pgp key validated<br>";
+	if(preg_match("^[0-9a-zA-Z\.\-\s\n\r=+:/]*?$", $txt)) { return 1; }
 	return 1;
+}
+
+function validateUsername($username)
+{
+	if(preg_match("/^[0-9a-zA-Z]+?$/", $username)) { return 1; }
+	return 0;
 }
 
 function unique_id($l = 8)

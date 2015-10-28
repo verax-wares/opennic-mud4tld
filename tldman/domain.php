@@ -63,52 +63,6 @@ function check_domain($domain)
 	form_check_domain();
 }
 
-/*
-function frm_register_domain($domain)
-{
-	global $TLD, $ws_title;
-?>
-<table width="500" align="center">
-<tr><td align="center"><h1><?php echo $ws_title; ?> Registration</h1></td></tr>
-<tr><td>
-<p>Please fill out the information below. Make sure the details are correct before clicking "Register Domain" as incorrect details may delay the registration process.</p>
-</td></tr>
-<tr><td align="center">
-<p><br>You are registering <font color="#008000"><b><?php echo $domain.".".$TLD; ?></b></font><BR>To register a different domain, please <a href="domain.php">check</a> it first.</p>
-<?php
-if(!isset($_SESSION['username']))
-{
-	echo "You must <a href=\"user.php?action=frm_login\">login</a> first before trying to register a domain.";
-} else {
-?>
-<form action="domain.php" method="post">
-<table width="450" border=0 cellspacing=1 cellpadding=0>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td width="200" valign="top">Username</td><td><?php echo $_SESSION['username']; ?><BR><font size="-1">(not you? <a href="user.php?action=frm_login">Login</a> as the correct user)</font></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2"><b>Nameserver Settings</b></td></tr>
-<tr><td>NS1 <font size="-1">eg: ns1.mywebhost.com</font></td><td><input type="text" name="ns1" value="enter here"></td></tr>
-<tr><td>NS2 <font size="-1">eg: ns2.mywebhost.com</font></td><td><input type="text" name="ns2" value="enter here"></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2">Custom Nameservers <font size="-1">(Experts only, can be left blank)</font></td></tr>
-<tr><td>NS1 <font size="-1">(IPv4 only)</font></td><td><input type="text" name="ns1_ip"></td></tr>
-<tr><td>NS2 <font size="-1">(IPv4 only)</font></td><td><input type="text" name="ns2_ip"></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2" align="center"><input type="hidden" name="action" value="register_domain"><input type="submit" name="submit" value="Register Domain"></tr></tr>
-</table>
-<?php
-echo "<input type=\"hidden\" name=\"domain\" value=\"".$domain."\">\n";
-?>
-</form>
-<?php
-}
-?>
-</td></tr>
-</table>
-<?php
-}
-*/
-
 function register_domain($domain)
 {
 	show_header();
@@ -133,7 +87,6 @@ function register_domain($domain)
 		echo "Sorry, this domain has already been submitted for processing. If you believe this to be in error or you would like to dispute the previous registration, please contact us using the domain <a href=\"abuse.php\">abuse</a> page</a>. Thank you.";
 		die();
 	}
-	echo "<b>Debug1</b>";
 	$nowp1 = (date("Y") + 1).date("-m-d");
 	$now = date("Y-m-d");
 	$now2 = $now;
@@ -146,7 +99,6 @@ function register_domain($domain)
 	} else {
 			echo "<font color=\"#800000\"><b>Error</b></font><BR>An error occured during registration. Please try again.";
 	}
-	echo "<b>Debug2</b>";
 }
 
 function delete_domain($domain)
@@ -199,10 +151,6 @@ function frm_view_domain($domain)
 
 	show_header();
 	$userid=$_SESSION['userid'];
-	#$base=database_open_now($tld_db, 0666);
-	#$query = "SELECT * FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
-	#$results = database_query_now($base, $query);
-	#$arr=database_fetch_array_now($results);
 	$arr = database_pdo_query("SELECT * FROM $domain_table WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1");
 	$real_userid=$arr['userid'];
 	if($userid != $real_userid)
