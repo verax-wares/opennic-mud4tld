@@ -63,6 +63,7 @@ function check_domain($domain)
 	form_check_domain();
 }
 
+/*
 function frm_register_domain($domain)
 {
 	global $TLD, $ws_title;
@@ -106,8 +107,8 @@ echo "<input type=\"hidden\" name=\"domain\" value=\"".$domain."\">\n";
 </table>
 <?php
 }
+*/
 
-#function register_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 function register_domain($domain)
 {
 	show_header();
@@ -123,41 +124,10 @@ function register_domain($domain)
 	{
 		echo "Error validating user name.\n"; die();
 	}
-	#$ns1=$_POST['ns1'];
-	#$ns2=$_POST['ns2'];
-	#if( ($ns1=="enter here") || ($ns2=="enter here") )
-	#{
-	#	echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die();
-	#}
-	#if( (empty($ns1)) || (empty($ns2)))
-	#{
-	#	echo "<font color='#ff0000'><b>Error</b></font> Please change the nameservers to your own.\n"; die();
-	#}
-	#if( (isset($_POST['ns1_ip'])) && (strlen($_POST['ns1_ip'])>0) )
-	#{
-	#	$ns1_ip=$_POST['ns1_ip'];
-	#	if(validateIPAddress($ns1_ip)==0)
-	#	{
-	#		echo "<font color='#ff0000'><b>Error</b></font> NS1 Custom Nameserver must be a valid IPv4 address"; die();
-	#	}
-	#}
-	#if( (isset($_POST['ns2_ip'])) && (strlen($_POST['ns2_ip'])>0) )
-	#{
-	#	$ns2_ip=$_POST['ns2_ip'];
-	#	if(validateIPAddress($ns2_ip)==0)
-	#	{
-	#		echo "<font color='#ff0000'><b>Error</b></font> NS2 Custom Nameserver must be a valid IPv4 address"; die();
-	#	}
-	#}#
 	if( (strlen($domain)<2) && (strlen($domain)>50) && (strlen($ns1)<5) && (strlen($ns2)<5) )
 	{
 		echo "<font color='#ff0000'><b>Error</b></font> Domain details must adhere to standard lengths.\n"; die();
 	}
-	#if($ns1 == $ns2)
-	#{
-#		echo "<font color='#FF8C00'><b>Please Note:</b></font> We highly recommend that you use two different nameserver values instead of the same one.<BR>\n";
-	#}
-	#echo "Processing ".$domain.'.'.$TLD."...";
 	if(domain_taken($domain))
 	{
 		echo "Sorry, this domain has already been submitted for processing. If you believe this to be in error or you would like to dispute the previous registration, please contact us using the domain <a href=\"abuse.php\">abuse</a> page</a>. Thank you.";
@@ -168,15 +138,7 @@ function register_domain($domain)
 	$now = date("Y-m-d");
 	$now2 = $now;
 	
-#	$dbh = database_new_handle();
-	$ret_data = database_pdo_query("INSERT INTO $domain_table () VALUES ('$domain', '$username', 'contact@example.chan', 'ns1.example.chan', 'ns2.example.chan', '192.168.1.1', '192.168.1.2', '$now', '$nowp1', '$now', '$userid')");
-	#echo "<b>$sth</b><br>";
-	#$ret_data = $dbh->query($sth);
-	#$ret_data = $sth->execute(array($domain_table, $domain, $username, $now, $nowp1, $now2, $userid));
-	#echo "INSERT INTO $domain_table VALUES ($domain, $username, 'contact@example.chan', 'ns1.example.chan', 'ns2.example.chan', '192.168.1.1', '192.168.1.2', $now, $nowp1, $now2, $userid)";
-
-	#$sth = null;
-	#$dbh = null; #make sure to close handles
+	$ret_data = database_pdo_query("INSERT INTO $domain_table (domain,name,email,ns1,ns2,ns1_ip,ns2_ip,registered,expires,updated,userid) VALUES ('$domain', '$username', 'contact@example.chan', 'ns1.example.chan', 'ns2.example.chan', '192.168.1.1', '192.168.1.2', '$now', '$nowp1', '$now', '$userid')");
 
 	if ($ret_data == 1)
 	{
@@ -232,14 +194,16 @@ function frm_delete_domain($domain)
 
 function frm_view_domain($domain)
 {
-	global $TLD, $tld_db;
+	#global $TLD, $tld_db;
+	global $domain_table, $TLD;
 
 	show_header();
 	$userid=$_SESSION['userid'];
-	$base=database_open_now($tld_db, 0666);
-	$query = "SELECT * FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
-	$results = database_query_now($base, $query);
-	$arr=database_fetch_array_now($results);
+	#$base=database_open_now($tld_db, 0666);
+	#$query = "SELECT * FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
+	#$results = database_query_now($base, $query);
+	#$arr=database_fetch_array_now($results);
+	$arr = database_pdo_query("SELECT * FROM $domain_table WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1");
 	$real_userid=$arr['userid'];
 	if($userid != $real_userid)
 	{
@@ -250,14 +214,21 @@ function frm_view_domain($domain)
 	echo "Registered: ".$arr['registered']."<BR><BR>\n";
 ?>
 <form action="domain.php" method="post">
-<table width="320" border=0 cellspacing=2 cellpadding=0>
-<tr><td colspan="2"><b>Nameserver Settings</b></td></tr>
-<tr><td>NS1</td><td><input type="text" name="ns1" value="<?php echo $arr['ns1']; ?>"></td></tr>
-<tr><td>NS2</td><td><input type="text" name="ns2" value="<?php echo $arr['ns2']; ?>"></td></tr>
-<tr><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2">Custom Nameserver Settings<BR><font size="-1">(Experts only)</font></td></tr>
-<tr><td>NS1</td><td><input type="text" name="ns1_ip" value="<?php echo $arr['ns1_ip']; ?>"><font size="-1">IPv4 only</font></td></tr>
-<tr><td>NS2</td><td><input type="text" name="ns2_ip" value="<?php echo $arr['ns2_ip']; ?>"><font size="-1">IPv4 only</font></td></tr>
+<table width="600" border=0 cellspacing=2 cellpadding=0>
+<tr><td colspan="3"><b>Name Settings</b></td></tr>
+<tr><td>Type</td><td><input type=radio name=isns value=0 <?php if(! $arr['type']) echo "checked"; ?>>A<br><input type=radio name=isns value=1 <?php if($arr['type']) echo "checked"; ?>>NS</td></tr>
+<tr><td>Server 1</td><td><input type="text" name="ns1" value="<?php echo $arr['ns1']; ?>"></td></tr>
+<tr><td>Server 2</td><td><input type="text" name="ns2" value="<?php echo $arr['ns2']; ?>"></td></tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr><td colspan="3">Address Settings</td></tr>
+<tr><td>Server 1</td><td><input type="text" name="ns1_ip" value="<?php echo $arr['ns1_ip']; ?>"><font size="-1">IPv4 only</font></td></tr>
+<tr><td>Server 2</td><td><input type="text" name="ns2_ip" value="<?php echo $arr['ns2_ip']; ?>"><font size="-1">IPv4 only</font></td></tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr><td>Mail Server</td><td colspan="2"><input type="text" name="mx1" value="<?php echo $arr['mx1']; ?>"></td></tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr><td>Description</td><td colspan="2"><input type="text" name="txt" value="<?php echo $arr['txt']; ?>" size="100" maxlength="255"></td></tr>
+<tr><td colspan="3">&nbsp;</td></tr>
+<tr><td>DSKEY</td><td colspan="2"><input type="text" name="dskey" value="<?php echo $arr['dskey']; ?>" size="100" maxlength="255"></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2" align="center">
 <input type="hidden" name="domain" value="<?php echo $domain; ?>">
@@ -276,17 +247,39 @@ function frm_view_domain($domain)
 <?php
 }
 
-function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
+function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip, $mx1, $dskey, $txt, $isns)
 {
-	global $TLD, $tld_db;
+	global $TLD, $tld_db, $domain_table;
 
 	show_header();
+	if((!validateIPAddress($ns1_ip)) || (!validateIPAddress($ns2_ip)))
+	{
+		echo "IP Addresses must be a valid IPv4 or IPv6 address\nIPv6 addresses must be in long form: do not use :: to omit 0'd hextets";
+		die();
+	}
+	if((!validateFQDN($ns1, $domain)) || (!validateFQDN($ns2, $domain)) || (!validateFQDN($mx1, "")))
+	{
+		echo "All hostnames must be in FQDN form, including the .$TLD<br>The server hostname(s) must match the domain.";
+		die();
+	}
+	if(!validateDSKEY($dskey))
+	{
+		echo "Your DSkey is invalid<br>";
+		die();
+	}
+	if(!validateTXT($txt))
+	{
+		echo "Your site description contains invalid characters<br>";
+		die();
+	}
+	if(($isns != 0 ) && ($isns != 1))
+	{
+		echo "something has gone badly wrong.  Please report to the admin that 'isns' is not a 1 or 0.";
+		die();
+	}
 	$updated=strftime('%Y-%m-%d');
 	$userid=$_SESSION['userid'];
-	$base=database_open_now($tld_db, 0666);
-	$query = "SELECT userid FROM domains WHERE userid='".$userid."' AND domain='".$domain."' LIMIT 1";
-	$results = database_query_now($base, $query);
-	$arr=database_fetch_array_now($results);
+	$arr = database_pdo_query("SELECT * FROM $domain_table WHERE userid='$userid' AND domain='$domain' LIMIT 1");
 	$real_userid=$arr['userid'];
 	if($userid != $real_userid)
 	{
@@ -294,23 +287,8 @@ function update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip)
 		die();
 	}
 	echo "Updating ".$domain.'.'.$TLD."...";
-	if(($ns1_ip != "NULL") && ($ns2_ip != "NULL"))
-	{
-		if( (!validateIPAddress($ns1_ip)) && (!validateIPAddress($ns2_ip)) )
-		{
-			echo "Error. NS1 and NS2 custom nameservers must be IP addresses.";
-		} else {
-			$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."', ns1_ip='".$ns1_ip."', ns2_ip='".$ns2_ip."', updated='".$updated."' WHERE domain='".$domain."'";
-		}
-	} else {
-		$query = "UPDATE domains SET ns1='".$ns1."', ns2='".$ns2."', updated='".$updated."' WHERE domain='".$domain."'";
-	}
-	database_query_now($base, $query);
+	$ret_data = database_pdo_query("UPDATE domains SET ns1='$ns1', ns2='$ns2', updated='$updated', ns1_ip='$ns1_ip', ns2_ip='$ns2_ip', mx1='$mx1', dskey='$dskey', txt='$txt',  isns='$isns' WHERE domain='$domain' AND userid='$userid'");
 	echo "Done. The changes should take effect within the hour. Please be aware some networks may not see the changes for up to 72 hours.<BR>";
-	if($ns1 == $ns2)
-	{
-		echo "<b>Please Note:</b> We highly recommend that you use two different nameserver values instead of the same one.";
-	}
 }
 
 // Main entry point
@@ -399,47 +377,59 @@ if(isset($_REQUEST['action']))
 			/* standard nameservers */
 			if(!isset($_POST['ns1']))
 			{
-				die("Nameserver 1 is required.");
+				die("Server 1 is required.");
 			}
 			$ns1=$_POST['ns1'];
 			if($ns1=='')
 			{
 				die("Nameserver 1 is required.");
 			}
-			if(!isset($_POST['ns2']))
+			if(isset($_POST['ns2']))
 			{
-				die("Nameserver 2 is required.");
+				$ns2=$_POST['ns2'];
 			}
-			$ns2=$_POST['ns2'];
-			if($ns2=='')
-			{
-				die("Nameserver 2 is required.");
-			}
-			if( (strlen($ns1)<7) && (strlen($ns2)<7) )
-			{
-				die("Nameservers need to be at least 7 characters long.");
-			}
+			#if($ns2=='')
+			#{
+			#	die("Nameserver 2 is required.");
+			#}
+			#if( (strlen($ns1)<7) && (strlen($ns2)<7) )
+			#{
+			#	die("Nameservers need to be at least 7 characters long.");
+			#}
 			/* deal with custom nameservers */
 			if(isset($_POST['ns1_ip']))
 			{
-				if(strlen($_POST['ns1_ip'])>0)
-				{
-					$ns1_ip=$_POST['ns1_ip'];
-				} else {
-					$ns1_ip="NULL";
-				}
+				$ns1_ip=$_POST['ns1_ip'];
+			} else {
+				$ns1_ip="NULL";
 			}
 			if(isset($_POST['ns2_ip']))
 			{
-				if(strlen($_POST['ns2_ip'])>0)
-				{
-					$ns2_ip=$_POST['ns2_ip'];
-				} else {
-					$ns2_ip="NULL";
-				}
+				$ns2_ip=$_POST['ns2_ip'];
+			} else {
+				$ns2_ip="NULL";
 			}
+			if(isset($_POST['mx1']))
+			{
+				$mx1=$_POST['mx1'];
+			} else {
+				$mx1="NULL";
+			}
+			if(isset($_POST['dskey']))
+			{
+				$dskey=$_POST['dskey'];
+			} else {
+				$dskey="NULL";
+			}
+			if(isset($_POST['txt']))
+			{
+				$txt=$_POST['txt'];
+			} else {
+				$txt="NULL";
+			}
+			$isns=$_POST['isns'];
 
-			update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip);
+			update_domain($domain, $ns1, $ns2, $ns1_ip, $ns2_ip, $mx1, $dskey, $txt, $isns);
 			break;
 		default:
 			echo "Invalid command.";

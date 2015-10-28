@@ -117,7 +117,6 @@ function form_register()
 <form action="user.php" method="post">
 <table width="400" align="center">
 <tr><td colspan="2" align="center"><h2><?php echo $TLD; ?> User Registration</h2><font size="-1">All entries must be at least 5 characters long.</font></td></tr>
-<tr><td>Name</td><td><input type="text" name="name" maxlength="50"></td></tr>
 <tr><td>Email</td><td><input type="text" name="email1" maxlength="50"><sup>*</sup></td></tr>
 <tr><td>Email confirmation</td><td><input type="text" name="email2" maxlength="50"><sup>*</sup></td></tr>
 <tr><td>Username</td><td><input type="text" name="username" maxlength="20"></td></tr>
@@ -134,7 +133,7 @@ function form_register()
 <?php
 }
 
-function register($username, $name, $email, $password)
+function register($username, $email, $password)
 {
 	global $TLD, $tld_db;
 
@@ -143,7 +142,7 @@ function register($username, $name, $email, $password)
 	/* prepare clean data */
 	$username=htmlspecialchars(stripslashes($username));
 	$password=htmlspecialchars(stripslashes($password));
-	$name=htmlspecialchars(stripslashes($name));
+	#$name=htmlspecialchars(stripslashes($name));
 	$email=htmlspecialchars(stripslashes($email));
 	
 	/* perform validation checks */
@@ -161,7 +160,7 @@ function register($username, $name, $email, $password)
 	}
 	
 	/* let the user know */
-	echo "Creating new account for ".$name." via ".$username."<BR>\n";
+	echo "Creating new account for $username<BR>\n";
 
 	/* generate user verification key */
 	$userkeyfile="tmp/".$username.".ukf";	// some environments does not allow execuion outside its boundaries even /tmp
@@ -175,14 +174,15 @@ function register($username, $name, $email, $password)
 	$real_password=hash('sha256',$password);
 	date_default_timezone_set('Etc/UTC');
 	$registered=strftime('%Y-%m-%d');
-	$query = "INSERT INTO users (username, password, name, email, registered, verified)
-			VALUES('".$username."', '".$real_password."', '".$name."', '".$email."', '".$registered."', 0)";
-	$results = database_query_now($base, $query);
+	#$query = "INSERT INTO users (username, password, email, registered, verified)
+	#		VALUES('".$username."', '".$real_password."', '".$email."', '".$registered."', 0)";
+	#$results = database_query_now($base, $query);
+	$results = database_pdo_query("INSERT INTO users (username, password, email, registered, verified) VALUES('".$username."', '".$real_password."', '".$email."', '".$registered."', 0)");
 	
 	/* construct email */
 	$msg_FROM = "FROM: hostmaster@opennic.".$TLD;
 	$msg_subject = "OpenNIC ".$TLD." User Registration.";
-	$msg = "Welcome ".$name." to OpenNIC.".$TLD."!\n\n";
+	$msg = "Welcome ".$username." to OpenNIC.".$TLD."!\n\n";
 	$msg .= "Your details are:\n";
 	$msg .= "Username: ".$username."\n";
 	$msg .= "Password: (The one you specified during sign up. Remember, this is encrypted and cannot be retrieved.)\n\n";
@@ -196,7 +196,7 @@ function register($username, $name, $email, $password)
 
 function dashboard()
 {
-	global $TLD, $domain_expires, $tld_db;
+	global $TLD, $domain_expires, $tld_db, $user_table;
 	show_header();
 	
 	$username=$_SESSION['username'];
@@ -233,41 +233,25 @@ function dashboard()
 	}
 	echo "You can register a new ".$TLD." <a href=\"domain.php?action=frm_check_domain\">here</a>.";
 
-	$get_user_details="SELECT name, email, country FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
+	$get_user_details="SELECT email, pgpkey FROM users WHERE userid='".$userid."' AND username='".$username."' LIMIT 1";
 	$base=database_open_now($tld_db, 0666);
 	$get_user_details_results = database_query_now($base, $get_user_details);
 	$get_user_details_arr=database_fetch_array_now($get_user_details_results);
-	$name=$get_user_details_arr['name'];
+	#$name=$get_user_details_arr['name'];
+	#$get_user_details_arr=databse_pdo_query("SELECT email, pgpkey FROM $user_table WHERE userid='$userid' AND username='$username' LIMIT 1";
 	$email=$get_user_details_arr['email'];
-	$country=$get_user_details_arr['country'];
+	#$country=$get_user_details_arr['country'];
+	$pgpkey=$get_user_details_arr['pgpkey'];
 ?>
 <BR><BR>
 <form action="user.php" method="post">
 <table width="450" align="center">
 <tr><td colspan="2" align="center"><b>.<?php echo $TLD; ?> User Details</b></td></tr>
-<tr><td>Name</td><td><?php echo $name; ?></td></tr>
 <tr><td>Email</td><td><?php echo $email; ?><sup>*</sup></td></tr>
-<tr><td>Country</td><td>
-<select name="country">
-<?php
-if(strlen($country)>0)
-{
-	echo "<option value=\"".$country."\" selected>Current (".$country.")</option>\n";
-} else {
-	echo "<option>Select</option>\n";
-}
-?>
-<option>------</option>
-<option value="AU">Australia</option>
-<option value="CA">Canada</option>
-<option value="DE">Germany</option>
-<option value="MX">Mexico</option>
-<option value="UK">United Kingdom</option>
-<option value="US">United States</option>
-</select><sup>**</sup></td></tr>
 <tr><td>Current Password</td><td><input type="password" name="password"></td></tr>
 <tr><td valign="top">Password</td><td><input type="password" name="password1"><BR><font size="-1">(Must be at least 5 characters long)</font></td></tr>
 <tr><td>Password Confirm</td><td><input type="password" name="password2"></td></tr>
+<tr><td>PGP Key*</td><td><textarea rows="40" cols="85" name="pgpkey" wrap="physical"><?php echo $pgpkey; ?></textarea></td></tr>
 <tr><td colspan="2" align="center"><input type="submit" name="submit" value="Update"></td></tr>
 <input type="hidden" name="action" value="update_account">
 <tr><td colspan="2">
@@ -281,20 +265,35 @@ if(strlen($country)>0)
 	echo "</center>";
 }
 
-function update_account($country, $password)
+function update_account($password, $pgpkey)
 {
-	global $tld_db;
+	global $user_table;
 	show_header();
+	$changed=0;
 	if(!isset($_SESSION['userid']))
 	{
 		echo "No valid account."; die();
 	}
 	$userid=$_SESSION['userid'];
-	$password=htmlspecialchars(stripslashes($password));
-	$real_password=hash('sha256',$password);
-	$query = "UPDATE users SET country='".$country."', password='".$real_password."' WHERE userid='".$userid."'";
-	$base=database_open_now($tld_db, 0666);
-	database_query_now($base, $query);
+	if ( strlen($password) > 0 )
+	{
+		$password=htmlspecialchars(stripslashes($password));
+		$real_password=hash('sha256',$password);
+		$pass_ret = database_pdo_query("UPDATE $user_table SET password='$real_password' WHERE userid='$userid'");
+		$changed=1;
+		echo "debug pass updated<br>";
+	}
+	if ( strlen($pgpkey) > 0 )
+	{
+		echo "debug pgpkey gt 0 <br>";
+		if(!validatePGP($pgpkey))
+		{
+			echo "Invalid PGP key<br>";
+			die();
+		}
+		echo "pgp key passes validation<br>";
+		$pgp_ret = database_pdo_query("UPDATE $user_table SET pgpkey='$pgpkey' WHERE userid='$userid'");
+	}
 	echo "Details updated.";
 }
 
@@ -341,14 +340,14 @@ if(!isset($_REQUEST['action']))
 			login($username, $password);
 			break;
 		case "register":
-			if(isset($_POST['username']) && isset($_POST['password1']) && isset($_POST['password2']) && isset($_POST['email1'])  && isset($_POST['email2']) && isset($_POST['name']))
+			if(isset($_POST['username']) && isset($_POST['password1']) && isset($_POST['password2']) && isset($_POST['email1'])  && isset($_POST['email2']))
 			{
 				$username=$_POST['username'];
 				$password1=$_POST['password1'];
 				$password2=$_POST['password2'];
 				$email=$_POST['email1'];
 				$email2=$_POST['email2'];
-				$name=$_POST['name'];
+				#$name=$_POST['name'];
 			} else {
 				echo "Data error. Please retry.";
 				die();
@@ -368,7 +367,7 @@ if(!isset($_REQUEST['action']))
 				echo "Invalid data. Please try again.";
 				die();
 			}
-			register($username, $name, $email, $password1);
+			register($username, $email, $password1);
 			break;
 		case "update_account":
 			if(!isset($_POST['password']))
@@ -382,12 +381,12 @@ if(!isset($_REQUEST['action']))
 			{
 				echo "Password should be at least 6 characters long.\n"; die();
 			}
-			if(!isset($_POST['country']))
+			if(!isset($_POST['pgpkey']))
 			{
-				echo "Data error. Please retry.";
+				echo "Data error. Please retry.  PGPKEY not set.";
 				die();
 			} else {
-				$country=$_POST['country'];
+				$pgpkey=$_POST['pgpkey'];
 			}
 			if(isset($_POST['password1']))
 			{
@@ -409,7 +408,7 @@ if(!isset($_REQUEST['action']))
 				}
 				$password=$password1;
 			}
-			update_account($country, $password);
+			update_account($password, $pgpkey);
 			break;
 		case "view_account":
 			dashboard();

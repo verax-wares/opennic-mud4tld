@@ -12,8 +12,8 @@ updated DATE NOT NULL,
 userid INT NOT NULL,
 isns INT(1) DEFAULT 0,
 txt VARCHAR(255),
-dskey VARCHAR(255),
-pgpkey VARCHAR(8192));
+dskey VARCHAR(255)
+mx1 VARCHAR(255));
 
 create table users (
 userid INTEGER PRIMARY KEY,
@@ -23,4 +23,5 @@ name VARCHAR(50) NOT NULL,
 email VARCHAR(255) NOT NULL,
 country VARCHAR(2),
 registered DATE NOT NULL,
-verified INT NOT NULL);
+verified INT NOT NULL,
+pgpkey VARCHAR(8192));

@@ -195,6 +195,7 @@ function clean_up_input($str)
 //function to validate ip address format in php by Roshan Bhattarai(http://roshanbh.com.np)
 function validateIPAddress($ip_addr)
 {
+	echo "Debug IP validation: ip_addr = '$ip_addr'<br>";
 	// first of all the format of the ip address is matched
 	if(preg_match("/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/",$ip_addr))
 	{
@@ -208,8 +209,50 @@ function validateIPAddress($ip_addr)
 		}
 		return 1;
 	}
-	else
-		return 0; // if format of ip address doesn't matches
+	elseif(preg_match("/^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/", $ip_addr))
+	{
+		//check for invalid addresses
+		if(preg_match("/^[fF][eE]80:|^[fF]{2}00:|^0{1,4}:/", $ip_addr))
+		{
+			return 0;
+		}
+		return 1;
+	}
+	elseif($ip_addr == "") { return 1; }
+	return 0; // if format of ip address doesn't matches
+}
+
+function validateFQDN($hostname, $domain)
+{
+	global $TLD;
+	if(preg_match("/^(?:[a-zA-Z0-9]+?(?:[a-zA-Z0-9\-]+?[a-zA-Z0-9])?\.)?[a-zA-Z0-9]+?(?:[a-zA-Z0-9\-]+?[a-zA-Z0-9])?\.[a-zA-Z0-9]+?(?:[a-zA-Z0-9\-]+?[a-zA-Z0-9])?$/", $hostname))
+	{
+		echo "debug fqdn 1 - $hostname<br>";
+		if(preg_match("/$domain.$TLD$/", $hostname))
+		{
+			return 1;
+		}
+	}
+	elseif($hostname == "") { return 1; }
+	return 0;	
+}
+
+function validateDSKEY($dskey)
+{
+	if(preg_match("/^[0-9a-zA-Z\.\-\s]+?$/", $dskey)) { return 1; }
+	return 0;
+}
+
+function validateTXT($txt)
+{
+	if(preg_match("/^[0-9a-zA-Z\.\-\s,_]+?$/", $txt)) { return 1; }
+	return 0;
+}
+
+function validatePGP($pgpkey)
+{
+	echo "pgp key validated<br>";
+	return 1;
 }
 
 function unique_id($l = 8)
