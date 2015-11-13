@@ -1,11 +1,4 @@
 <?php
-/*
-MariaDB - dnsman
-Database: dnsman
-
-User: dnsman
-Password: gYCj49rQpoqlG9ODljyH
-*/
 session_start();
 $TLD="chan";
 $server='opennic.'.$TLD;
@@ -21,7 +14,7 @@ $tld_svr="http://chandns.net:82/rm/rm_api.php";
 $mysql_support=1;
 $mysql_server='localhost';
 $mysql_username='dnsman';
-$mysql_password='gYCj49rQpoqlG9ODljyH';
+$mysql_password='PASSWORD';
 $mysql_database='dnsman';
 $user_table='users';
 $domain_table='domains';
