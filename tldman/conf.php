@@ -195,7 +195,7 @@ function clean_up_input($str)
 //function to validate ip address format in php by Roshan Bhattarai(http://roshanbh.com.np)
 function validateIPAddress($ip_addr)
 {
-	echo "Debug IP validation: ip_addr = '$ip_addr'<br>";
+	//echo "Debug IP validation: ip_addr = '$ip_addr'<br>";
 	// first of all the format of the ip address is matched
 	if(preg_match("/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/",$ip_addr))
 	{
@@ -227,7 +227,6 @@ function validateFQDN($hostname, $domain)
 	global $TLD;
 	if(preg_match("/^(?:[a-zA-Z0-9]+?(?:[a-zA-Z0-9\-]+?[a-zA-Z0-9])?\.)?[a-zA-Z0-9]+?(?:[a-zA-Z0-9\-]+?[a-zA-Z0-9])?\.[a-zA-Z0-9]+?(?:[a-zA-Z0-9\-]+?[a-zA-Z0-9])?$/", $hostname))
 	{
-		echo "debug fqdn 1 - $hostname<br>";
 		if(preg_match("/$domain.$TLD$/", $hostname))
 		{
 			return 1;
