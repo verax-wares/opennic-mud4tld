@@ -1,4 +1,11 @@
 <?php
+/*
+MariaDB - dnsman
+Database: dnsman
+
+User: dnsman
+Password: gYCj49rQpoqlG9ODljyH
+*/
 session_start();
 $TLD="chan";
 $server='opennic.'.$TLD;
@@ -19,10 +26,10 @@ $mysql_database='dnsman';
 $user_table='users';
 $domain_table='domains';
 $tld_db="../".$TLD."_tld.sq3";
-$specialNamesOpenNIC='[register|registrar|opennic|openic|www|web|http|https|ftp|ftps|ldap|mail|pop|pop3|smtp|nic|dot|com|org|net|gov|biz|info|name]';
-$specialNamesDNS='/^(dns|ns|nameserver)[0-9]*$/';
-$specialNamesRFC6761='[test|localhost|invalid|example|alt]';
-$specialNamesIANA='[aso|dnso|icann|internic|pso|afrinic|apnic|arin|gtld-servers|iab|iana|iana-servers|iesg|ietf|irtf|istf|lacnic|latnic|rfc-editor|ripe|root-servers]';
+$specialNamesOpenNIC='/^(register|registrar|opennic|openic|www|web|http|https|ftp|ftps|ldap|mail|pop|pop3|smtp|nic|dot|com|org|net|gov|biz|info|name)$/i';
+$specialNamesDNS='/^(dns|ns|nameserver)[0-9]*$/i';
+$specialNamesRFC6761='/^(test|localhost|invalid|example|alt)$/i';
+$specialNamesIANA='/^(aso|dnso|icann|internic|pso|afrinic|apnic|arin|gtld-servers|iab|iana|iana-servers|iesg|ietf|irtf|istf|lacnic|latnic|rfc-editor|ripe|root-servers)$/i';
 
 function database_open_now($location=null,$mode=null)	//mode is not used
 {
