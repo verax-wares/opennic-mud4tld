@@ -6,9 +6,9 @@ use File::Copy;
 
 my $sql_db = "dnsman";
 my $sql_user = "dnsman";
-my $sql_pass = "PASSWORD";
+my $sql_pass = "gYCj49rQpoqlG9ODljyH";
 my $domain_table = "domains";
-my $sql_server = "172.0.0.1";
+my $sql_server = "94.103.153.175";
 
 my $tld = "chan";
 my $logfile = "/var/log/zonegen.log";
@@ -48,16 +48,18 @@ while (my $line = <LOG>)
 		if ( $1 eq $stime )
 		{
 			$serial = ("$1"."$2") + 1;
+			#print '$1 eq $stime\n';
 		}
 		else
 		{
 			$serial = "$stime"."00";
+			#print '$1 ne $stime\n';
 		}
 	}
-	else
-	{
-		$serial = "$stime"."00";
-	}
+	#else
+	#{
+	#	$serial = "$stime"."00";
+	#}
 }
 close(LOG);
 
@@ -89,7 +91,7 @@ foreach my $row_ref (sort(keys(%{$results})))
 {
 	my %row = %{%{$results}{"$row_ref"}};
 	
-	print FH "\n\n;$row{'domain'}.$tld\n";
+	print FH "\n\n;$row{'domain'}.$tld.\n";
 
 	if ( $row{'isns'} )
 	{
@@ -101,13 +103,13 @@ foreach my $row_ref (sort(keys(%{$results})))
 				#add glue records if the NS is under their domain
 				if ( $row{'ns1_ip'} ne "" )
 				{
-					print FH "$row{'domain'}.$tld\t\tIN\tNS\t$row{'ns1'}\n";
-					print FH "$row{'ns1'}\t\tIN\tA\t$row{'ns1_ip'}\n";
+					print FH "$row{'domain'}.$tld.\t\tIN\tNS\t$row{'ns1'}.\n";
+					print FH "$row{'ns1'}.\t\tIN\tA\t$row{'ns1_ip'}\n";
 				}
 			}
 			else
 			{
-				print FH "$row{'domain'}.$tld\t\tIN\tNS\t$row{'ns1'}\n";
+				print FH "$row{'domain'}.$tld.\t\tIN\tNS\t$row{'ns1'}.\n";
 			}
 		}
 		if ( $row{'ns2'} ne "" )
@@ -117,13 +119,13 @@ foreach my $row_ref (sort(keys(%{$results})))
 				#add glue records if the NS is under their domain
 				if ( $row{'ns2_ip'} ne "" )
 				{
-					print FH "$row{'domain'}.$tld\t\tIN\tNS\t$row{'ns2'}\n";
-					print FH "$row{'ns2'}\t\tIN\tA\t$row{'ns2_ip'}\n";
+					print FH "$row{'domain'}.$tld.\t\tIN\tNS\t$row{'ns2'}.\n";
+					print FH "$row{'ns2'}.\t\tIN\tA\t$row{'ns2_ip'}\n";
 				}
 			}
 			else
 			{
-				print FH "$row{'domain'}.$tld\t\tIN\tNS\t$row{'ns2'}\n";
+				print FH "$row{'domain'}.$tld.\t\tIN\tNS\t$row{'ns2'}.\n";
 			}
 		}
 	}
@@ -131,7 +133,7 @@ foreach my $row_ref (sort(keys(%{$results})))
 	{
 		if ( ( $row{'ns1_ip'} ne "" ) and ( $row{'ns1'} =~ /$row{'domain'}\.$tld$/ ) )
 		{
-			print FH "$row{'ns1'}\t\tIN\tA\t$row{'ns1_ip'}\n";
+			print FH "$row{'ns1'}.\t\tIN\tA\t$row{'ns1_ip'}\n";
 		}
 		else
 		{
@@ -139,7 +141,7 @@ foreach my $row_ref (sort(keys(%{$results})))
 		}
 		if ( ( $row{'ns2_ip'} ne "" ) and ( $row{'ns2'} =~ /$row{'domain'}\.$tld$/ ) )
 		{
-			print FH "$row{'ns2'}\t\tIN\tA\t$row{'ns2_ip'}\n";
+			print FH "$row{'ns2'}.\t\tIN\tA\t$row{'ns2_ip'}\n";
 		}
 		else
 		{
@@ -149,12 +151,12 @@ foreach my $row_ref (sort(keys(%{$results})))
 	
 	if ( $row{'email'} ne "" )
 	{
-		print FH "$row{'domain'}.$tld\t\tIN\tRP\t$row{'email'} $row{'domain'}.$tld\n";
+		print FH "$row{'domain'}.$tld.\t\tIN\tRP\t$row{'email'} $row{'domain'}.$tld.\n";
 	}
 
 	if ( $row{'txt'} ne "" )
 	{
-		print FH "$row{'domain'}.$tld\t\tIN\tTXT\t\"$row{'txt'}\"\n";
+		print FH "$row{'domain'}.$tld.\t\tIN\tTXT\t\"$row{'txt'}\"\n";
 	}
 }
 
