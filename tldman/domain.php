@@ -32,9 +32,14 @@ function check_domain($domain)
 	$name=str_replace(" ", "", $name); /* remove spaces */
 	$name=str_replace("--", "-", $name); /* remove double hyphens */
 	$name=strtolower($name); /* all lower case to remove confusion */
-	if( (strlen($name)<=2) || (strlen($name)>63))	/* Domain name labels limit=63 and uri limit=253 octects see RFC1035 */
+	if( (strlen($name)<=0) || (strlen($name)>63))	/* Domain name labels limit=63 and uri limit=253 octects see RFC1035 */
 	{
-		echo "Sorry, domain names must contain at least 3 characters and be no longer than 253 characters.";	// >2 ISO 3166 reserved for country codes
+		echo "Sorry, domain names must contain at least 1 character and be no longer than 253 characters.";	// >2 ISO 3166 reserved for country codes
+		echo "Please go back and try again.";
+		die();
+	}
+	if(preg_match('/^[a-zA-Z]{2}$/', $name)) {
+		echo "ISO 3166 country codes are reserved at this time.";
 		echo "Please go back and try again.";
 		die();
 	}
@@ -48,7 +53,7 @@ function check_domain($domain)
 		echo "Please go back and try again.";
 		die();	
 	}
-	if(strlen($name)>2)
+	if(strlen($name)>0)
 	{
 		echo "Checking <b>".$name.".".$TLD."</b> for you...";
 		if(domain_taken($name))
